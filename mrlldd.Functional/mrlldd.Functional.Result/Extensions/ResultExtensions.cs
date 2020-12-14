@@ -38,12 +38,12 @@ namespace mrlldd.Functional.Result.Extensions
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
             Func<T, Task<TMapped>> asyncMapper) 
             => sourceTask
-                .ContinueWith(taskResult
-                    => taskResult.IsCompleted
-                        ? taskResult.Result
+                .ContinueWith(task
+                    => task.IsCompleted
+                        ? task.Result
                             .Bind(asyncMapper)
                         : Task
-                            .FromResult<Result<TMapped>>(taskResult.Exception))
+                            .FromResult<Result<TMapped>>(task.Exception))
                 .Unwrap();
     }
 }
