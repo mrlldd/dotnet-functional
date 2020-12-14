@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mrlldd.Functional.Currying"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mrlldd.Functional.Object", "mrlldd.Functional.Object\mrlldd.Functional.Object.csproj", "{7A0BC28B-6258-4EAB-9D9B-72DD88AC7F78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mrlldd.Functional.Result", "mrlldd.Functional.Result\mrlldd.Functional.Result.csproj", "{3E6BA2E6-FAD6-431E-8AF0-17F40220223C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{7A0BC28B-6258-4EAB-9D9B-72DD88AC7F78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A0BC28B-6258-4EAB-9D9B-72DD88AC7F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A0BC28B-6258-4EAB-9D9B-72DD88AC7F78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E6BA2E6-FAD6-431E-8AF0-17F40220223C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E6BA2E6-FAD6-431E-8AF0-17F40220223C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E6BA2E6-FAD6-431E-8AF0-17F40220223C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E6BA2E6-FAD6-431E-8AF0-17F40220223C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
