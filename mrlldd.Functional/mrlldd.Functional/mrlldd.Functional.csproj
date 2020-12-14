@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard1.0</TargetFramework>
+        <LangVersion>9</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\mrlldd.Functional.Currying\mrlldd.Functional.Currying.csproj" />
+      <ProjectReference Include="..\mrlldd.Functional.Object\mrlldd.Functional.Object.csproj" />
+    </ItemGroup>
+
+</Project>
