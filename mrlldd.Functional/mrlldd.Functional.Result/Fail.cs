@@ -11,7 +11,8 @@ namespace mrlldd.Functional.Result
         {
             Exception = exception;
         }
-
+        public override string ToString() 
+            => base.ToString() + "exception: " + Exception;
         public static implicit operator Fail<T>(Exception exception) => new(exception);
         
         public static implicit operator Exception(Fail<T> fail) => fail.Exception;

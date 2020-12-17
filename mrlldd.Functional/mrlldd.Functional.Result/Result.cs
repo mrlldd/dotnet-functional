@@ -17,6 +17,9 @@ namespace mrlldd.Functional.Result
                 ? throw new ResultUnwrapException("Can't extract exception from result as it's successful.")
                 : ((Fail<T>) result).Exception;
 
+        public override string ToString() 
+            => "Success: " + Successful + ", ";
+
         public static implicit operator Result<T>(Exception exception)
             => new Fail<T>(exception);
 

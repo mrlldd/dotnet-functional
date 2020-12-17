@@ -11,6 +11,9 @@
             Value = value;
         }
 
+        public override string ToString() 
+            => base.ToString() + "value: " + Value;
+
         public static implicit operator Success<T>(T value)
             => new(value);
         

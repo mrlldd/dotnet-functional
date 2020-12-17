@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace mrlldd.Functional.Result.Extensions
@@ -9,13 +10,16 @@ namespace mrlldd.Functional.Result.Extensions
 
         public static Result<T> AsFail<T>(this Exception exception) => new Fail<T>(exception);
 
-        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source, Func<T, TMapped> mapper)
-        {
-            if (!source.Successful)
-            {
-                return new Fail<TMapped>(source);
-            }
+        public static T UnwrapAsSuccess<T>(this Result<T> result) => result;
 
+        public static Exception UnwrapAsFail<T>(this Result<T> result) => result;
+        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source, Func<T, TMapped> mapper) 
+            => source.Successful 
+                ? ExecuteSafely<T, TMapped>(source, mapper)
+                : new Fail<TMapped>(source);
+
+        private static Result<TMapped> ExecuteSafely<T, TMapped>(T source, Func<T, TMapped> mapper)
+        {
             try
             {
                 return mapper(source);
@@ -29,9 +33,7 @@ namespace mrlldd.Functional.Result.Extensions
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source, Func<T, Task<TMapped>> asyncMapper) 
             => source.Successful
                 ? asyncMapper(source)
-                    .ContinueWith(new Func<Task<TMapped>, Result<TMapped>>(task => task.IsCompleted
-                        ? task.Result
-                        : task.Exception))
+                    .ContinueWith(task => task.Exception ?? task.Result.AsSuccess())
                 : Task
                     .FromResult<Result<TMapped>>(new Fail<TMapped>(source));
 
@@ -39,7 +41,7 @@ namespace mrlldd.Functional.Result.Extensions
             Func<T, Task<TMapped>> asyncMapper) 
             => sourceTask
                 .ContinueWith(task
-                    => task.IsCompleted
+                    => task.Exception == null
                         ? task.Result
                             .Bind(asyncMapper)
                         : Task
