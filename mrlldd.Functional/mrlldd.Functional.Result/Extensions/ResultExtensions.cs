@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace mrlldd.Functional.Result.Extensions
@@ -13,9 +14,16 @@ namespace mrlldd.Functional.Result.Extensions
         public static T UnwrapAsSuccess<T>(this Result<T> result) => result;
 
         public static Exception UnwrapAsFail<T>(this Result<T> result) => result;
-        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source, Func<T, TMapped> mapper) 
-            => source.Successful 
+
+        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source, Func<T, TMapped> mapper)
+            => source.Successful
                 ? ExecuteSafely<T, TMapped>(source, mapper)
+                : new Fail<TMapped>(source);
+
+        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source,
+            Func<T, CancellationToken, TMapped> mapper, CancellationToken cancellationToken = default)
+            => source.Successful
+                ? ExecuteSafely<T, TMapped>(source, mapper, cancellationToken)
                 : new Fail<TMapped>(source);
 
         private static Result<TMapped> ExecuteSafely<T, TMapped>(T source, Func<T, TMapped> mapper)
@@ -30,15 +38,41 @@ namespace mrlldd.Functional.Result.Extensions
             }
         }
 
-        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source, Func<T, Task<TMapped>> asyncMapper) 
+        private static Result<TMapped> ExecuteSafely<T, TMapped>(T source, Func<T, CancellationToken, TMapped> mapper,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                return mapper(source, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source, Func<T, Task<TMapped>> asyncMapper)
             => source.Successful
                 ? asyncMapper(source)
                     .ContinueWith(task => task.Exception ?? task.Result.AsSuccess())
                 : Task
                     .FromResult<Result<TMapped>>(new Fail<TMapped>(source));
 
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source,
+            Func<T, CancellationToken, Task<TMapped>> asyncMapper, CancellationToken cancellationToken)
+            => source.Successful
+                ? asyncMapper(source, cancellationToken)
+                    .ContinueWith(task =>
+                        task.Exception == null ? 
+                            task.IsCanceled 
+                                ? new AggregateException(new OperationCanceledException(cancellationToken)) 
+                                : task.Result.AsSuccess() 
+                            : task.Exception.AsFail<TMapped>())
+                : Task
+                    .FromResult<Result<TMapped>>(new Fail<TMapped>(source));
+
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
-            Func<T, Task<TMapped>> asyncMapper) 
+            Func<T, Task<TMapped>> asyncMapper)
             => sourceTask
                 .ContinueWith(task
                     => task.Exception == null
@@ -46,6 +80,17 @@ namespace mrlldd.Functional.Result.Extensions
                             .Bind(asyncMapper)
                         : Task
                             .FromResult<Result<TMapped>>(task.Exception))
+                .Unwrap();
+
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
+            Func<T, CancellationToken, Task<TMapped>> asyncMapper, CancellationToken cancellationToken)
+            => sourceTask
+                .ContinueWith(task
+                    => task.Exception == null
+                        ? task.Result
+                            .Bind(asyncMapper, cancellationToken)
+                        : Task
+                            .FromResult<Result<TMapped>>(task.Exception), cancellationToken)
                 .Unwrap();
     }
 }

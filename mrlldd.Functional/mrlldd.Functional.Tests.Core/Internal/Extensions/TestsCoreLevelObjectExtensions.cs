@@ -19,5 +19,8 @@ namespace mrlldd.Functional.Tests.Core.Internal.Extensions
 
             return source;
         }
+
+        public static TMapped Map<T, TMapped>(this T source, Func<T, TMapped> mapper) 
+            => mapper(source);
     }
 }

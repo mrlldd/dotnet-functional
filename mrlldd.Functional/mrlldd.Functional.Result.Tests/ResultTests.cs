@@ -3,6 +3,7 @@ using FluentAssertions;
 using mrlldd.Functional.Result.Exceptions;
 using mrlldd.Functional.Result.Extensions;
 using mrlldd.Functional.Tests.Core;
+using mrlldd.Functional.Tests.Core.Exceptions;
 using mrlldd.Functional.Tests.Core.Internal.Extensions;
 using NUnit.Framework;
 
@@ -48,10 +49,12 @@ namespace mrlldd.Functional.Result.Tests
         [Test]
         public void WrapsException()
         {
-            var exception = new Exception();
+            var exception = new TestException();
             Func<Result<int>> func = () => exception;
             func
-                .SideEffects(x => x.Should().NotThrow<ResultUnwrapException>(),
+                .SideEffects(x => x
+                        .Should()
+                        .NotThrow<ResultUnwrapException>(),
                     f => exception
                         .Should()
                         .BeSameAs(f().UnwrapAsFail()),
@@ -77,7 +80,7 @@ namespace mrlldd.Functional.Result.Tests
         [Test]
         public void UnwrapsException()
         {
-            var target = new Exception()
+            var target = new TestException()
                 .AsFail<object>();
             Func<Exception> func = () => target;
             func
@@ -88,7 +91,7 @@ namespace mrlldd.Functional.Result.Tests
         [Test]
         public void ThrowsIfExpectedSuccessIsFail()
         {
-            var target = new Exception()
+            var target = new TestException()
                 .AsFail<int>();
             Func<int> func = () => target;
             func

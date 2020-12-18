@@ -1,10 +1,13 @@
 ﻿using System;
-using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using mrlldd.Functional.Result.Extensions;
+using mrlldd.Functional.Result.Tests.TestUtilities;
 using mrlldd.Functional.Tests.Core;
+using mrlldd.Functional.Tests.Core.Exceptions;
 using mrlldd.Functional.Tests.Core.Extensions;
+using mrlldd.Functional.Tests.Core.Internal.Extensions;
 using NUnit.Framework;
 
 namespace mrlldd.Functional.Result.Tests.Extensions
@@ -16,27 +19,30 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             => Faker.Random
                 .Number()
                 .AsSuccess()
-                .ShouldMuch(x => x.BeOfType<Success<int>>(),
-                    x => x.BeAssignableTo<Result<int>>()).Successful
+                .SideEffect(x => x
+                    .Should()
+                    .BeAResult<int, Success<int>>()).Successful
                 .Should()
                 .BeTrue();
 
         [Test]
         public void ConvertsExceptionToFailResult()
-            => new Exception()
+            => new TestException()
                 .AsFail<object>()
-                .ShouldMuch(x => x.BeOfType<Fail<object>>(),
-                    x => x.BeAssignableTo<Result<object>>()).Successful
+                .SideEffect(x => x
+                    .Should()
+                    .BeAResult<object, Fail<object>>()).Successful
                 .Should()
                 .BeFalse();
 
 
         [Test]
         public void EvenExceptionIsSuccessfulResult()
-            => new Exception()
+            => new TestException()
                 .AsSuccess()
-                .ShouldMuch(x => x.BeOfType<Success<Exception>>(),
-                    x => x.BeAssignableTo<Result<Exception>>()).Successful
+                .SideEffect(x => x
+                    .Should()
+                    .BeAResult<TestException, Success<TestException>>()).Successful
                 .Should()
                 .BeTrue();
 
@@ -46,26 +52,51 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .Number()
                 .AsSuccess()
                 .Bind(x => x.ToString())
-                .ShouldMuch(x => x.BeOfType<Success<string>>(),
-                    x => x.BeAssignableTo<Result<string>>());
+                .Should()
+                .BeAResult<string, Success<string>>();
 
         [Test]
         public void BindsThrownException()
             => Faker.Random
                 .Number()
                 .AsSuccess()
-                .Bind(new Func<int, string>(_ => throw new Exception()))
-                .ShouldMuch(x => x.BeOfType<Fail<string>>(),
-                    x => x.BeAssignableTo<Result<string>>());
+                .Bind(new Func<int, string>(_ => throw new TestException()))
+                .Should()
+                .BeAResult<string, Fail<string>>();
+
+        [Test]
+        public void BindsCanceled()
+        {
+            var tokenSource = new CancellationTokenSource()
+                .SideEffect(x => x.Cancel());
+            var target = Faker.Random.Number().AsSuccess();
+            Func<Result<string>> func = () => target
+                .Bind((x, token) =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    return x.ToString();
+                }, tokenSource.Token);
+            func
+                .Should()
+                .NotThrow();
+            var result = func();
+            result
+                .Should()
+                .BeAResult<string, Fail<string>>();
+            result
+                .As<Fail<string>>().Exception
+                .Should()
+                .BeOfType<OperationCanceledException>();
+        }
 
         [Test]
         public void BindsException()
             => Faker.Random
                 .Number()
                 .AsSuccess()
-                .Bind(_ => new Exception())
-                .ShouldMuch(x => x.BeOfType<Success<Exception>>(),
-                    x => x.BeAssignableTo<Result<Exception>>());
+                .Bind(_ => new TestException())
+                .Should()
+                .BeAResult<TestException, Success<TestException>>();
 
         [Test]
         public Task BindsAsyncSuccess()
@@ -77,8 +108,8 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                     .ContinueWith(_ => x.ToString())
                 )
                 .ContinueWith(task => task.Result
-                    .ShouldMuch(x => x.BeOfType<Success<string>>(),
-                        x => x.BeAssignableTo<Result<string>>())
+                    .Should()
+                    .BeAResult<string, Success<string>>()
                 );
 
         [Test]
@@ -88,25 +119,58 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsSuccess()
                 .Bind(_ => Task
                     .Delay(Faker.Random.Number(0, 100))
-                    .ContinueWith<string>(_ => throw new Exception())
+                    .ContinueWith<string>(_ => throw new TestException())
                 )
                 .ContinueWith(task => task.Result
-                    .ShouldMuch(x => x.BeOfType<Fail<string>>(),
-                        x => x.BeAssignableTo<Result<string>>())
+                    .Should()
+                    .BeAResult<string, Fail<string>>()
                 );
+
+        [Test]
+        public async Task BindsAsyncCanceled()
+        {
+            var tokenSource = new CancellationTokenSource();
+#pragma warning disable 4014
+            // ReSharper disable once MethodSupportsCancellation
+            Task.Delay(Faker.Random.Number(100, 200))
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(_ => tokenSource.Cancel());
+#pragma warning restore 4014
+            var result = await Faker.Random
+                .Number()
+                .AsSuccess()
+                .Bind((x, token) => Task
+                    .Delay(Timeout.InfiniteTimeSpan, token)
+                    .ContinueWith(_ => x.ToString(), token), tokenSource.Token);
+            result
+                .SideEffects(x => x
+                        .Should()
+                        .BeAResult<string, Fail<string>>(),
+                    x => x
+                        .As<Fail<string>>().Exception
+                        .SideEffects(exception => exception
+                                .Should()
+                                .BeOfType<AggregateException>(),
+                            exception => exception
+                                .As<AggregateException>().InnerException
+                                .ShouldMuch(should => should.NotBeNull(),
+                                    should => should.BeOfType<OperationCanceledException>())
+                        )
+                );
+        }
 
         [Test]
         public Task BindsAsyncException()
             => Faker.Random
                 .Number()
                 .AsSuccess()
-                .Bind(x => Task
+                .Bind(_ => Task
                     .Delay(Faker.Random.Number(0, 100))
-                    .ContinueWith(_ => new Exception())
+                    .ContinueWith(_ => new TestException())
                 )
                 .ContinueWith(task => task.Result
-                    .ShouldMuch(x => x.BeOfType<Success<Exception>>(),
-                        x => x.BeAssignableTo<Result<Exception>>())
+                    .Should()
+                    .BeAResult<TestException, Success<TestException>>()
                 );
 
         [Test]
@@ -119,19 +183,120 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                     .ContinueWith(_ => x.ToString())
                 )
                 .ContinueWith(task => task.Result
-                    .ShouldMuch(x => x.BeOfType<Success<string>>(),
-                        x => x.BeAssignableTo<Result<string>>()));
-        
+                    .Should()
+                    .BeAResult<string, Success<string>>());
+
         [Test]
         public Task BindsAsyncFailFromTask()
             => Task
                 .FromResult(Faker.Random.Number().AsSuccess())
-                .Bind(x => Task
+                .Bind(_ => Task
                     .Delay(Faker.Random.Number(0, 100))
-                    .ContinueWith<string>(_ => throw new Exception())
+                    .ContinueWith<string>(_ => throw new TestException())
                 )
                 .ContinueWith(task => task.Result
-                    .ShouldMuch(x => x.BeOfType<Fail<string>>(),
-                        x => x.BeAssignableTo<Result<string>>()));
+                    .Should()
+                    .BeAResult<string, Fail<string>>());
+
+        [Test]
+        public Task BindsAsyncSuccessFromTaskThatReturnsException()
+            => Task
+                .Delay(Faker.Random.Number(0, 100))
+                .ContinueWith(_ => Faker.Random.Number().AsSuccess())
+                .Bind(_ => Task
+                    .Delay(Faker.Random.Number(0, 100))
+                    .ContinueWith(_ => new TestException())
+                )
+                .ContinueWith(task => task.Result
+                    .Should()
+                    .BeAResult<TestException, Success<TestException>>());
+
+        [Test]
+        public async Task BindsAsyncFailFromCanceledTask()
+        {
+            var tokenSource = new CancellationTokenSource();
+#pragma warning disable 4014
+            Task
+                // ReSharper disable once MethodSupportsCancellation
+                .Delay(Faker.Random.Number(100, 200))
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(_ => tokenSource.Cancel());
+#pragma warning restore 4014
+
+            var result = await Task
+                // ReSharper disable once MethodSupportsCancellation
+                .Delay(Faker.Random.Number(0, 100))
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(_ => Faker.Random.Number().AsSuccess())
+                .Bind((x, token) => Task
+                    .Delay(Timeout.InfiniteTimeSpan, token)
+                    .ContinueWith(_ => x.ToString(), token), tokenSource.Token);
+            result
+                .SideEffects(x => x
+                        .Should()
+                        .BeAResult<string, Fail<string>>(),
+                    x => x
+                        .As<Fail<string>>().Exception
+                        .SideEffects(exception => exception
+                                .Should()
+                                .BeOfType<AggregateException>(),
+                            exception => exception
+                                .As<AggregateException>().InnerException
+                                .ShouldMuch(should => should.NotBeNull(),
+                                    should => should.BeOfType<OperationCanceledException>())
+                        )
+                );
+        }
+
+        [Test]
+        public async Task BindsAsyncResultFromTaskWithCancellationToken()
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await Task
+                // ReSharper disable once MethodSupportsCancellation
+                .Delay(Faker.Random.Number(0, 100))
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(_ => Faker.Random.Number().AsSuccess())
+                .Bind((x, token) => Task
+                    .Delay(Faker.Random.Number(0, 100), token)
+                    .ContinueWith(_ => x.ToString(), token), tokenSource.Token);
+            result
+                .Should()
+                .BeAResult<string, Success<string>>();
+        }
+        
+        [Test]
+        public async Task BindsAsyncFailWithThrownExceptionFromTaskWithCancellationToken()
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await Task
+                // ReSharper disable once MethodSupportsCancellation
+                .Delay(Faker.Random.Number(0, 100))
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(_ => Faker.Random.Number().AsSuccess())
+                .Bind((x, token) => Task
+                    .Delay(Faker.Random.Number(0, 100), token)
+                    .ContinueWith<string>(_ => throw new TestException(), token), tokenSource.Token);
+            result
+                .Should()
+                .BeAResult<string, Fail<string>>();
+        }
+        
+        [Test]
+        public async Task BindsAsyncSuccessWithExceptionFromTaskWithCancellationToken()
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await Task
+                // ReSharper disable once MethodSupportsCancellation
+                .Delay(Faker.Random.Number(0, 100))
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(_ => Faker.Random.Number().AsSuccess())
+                .Bind((x, token) => Task
+                    .Delay(Faker.Random.Number(0, 100), token)
+                    .ContinueWith(_ => new TestException(), token), tokenSource.Token);
+            result
+                .Should()
+                .BeAResult<TestException, Success<TestException>>();
+        }
     }
 }
