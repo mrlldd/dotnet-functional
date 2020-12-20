@@ -28,7 +28,7 @@ namespace mrlldd.Functional.Result.Tests
                         .Be(target)
                 );
         }
-        
+
         [Test]
         public void WrapsReferenceTypeValue()
         {
@@ -45,7 +45,7 @@ namespace mrlldd.Functional.Result.Tests
                         .BeSameAs(target)
                 );
         }
-        
+
         [Test]
         public void WrapsException()
         {
@@ -109,5 +109,11 @@ namespace mrlldd.Functional.Result.Tests
                 .Should()
                 .ThrowExactly<ResultUnwrapException>();
         }
+
+        [Test]
+        public void NullExceptionCauseArgumentNullException()
+            => new Func<Result<object>>(() => (null as Exception)!.AsFail<object>())
+                .Should()
+                .ThrowExactly<ArgumentNullException>();
     }
 }

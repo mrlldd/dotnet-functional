@@ -154,7 +154,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                             exception => exception
                                 .As<AggregateException>().InnerException
                                 .ShouldMuch(should => should.NotBeNull(),
-                                    should => should.BeOfType<OperationCanceledException>())
+                                    should => should.BeOfType<TaskCanceledException>())
                         )
                 );
         }
@@ -243,7 +243,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                             exception => exception
                                 .As<AggregateException>().InnerException
                                 .ShouldMuch(should => should.NotBeNull(),
-                                    should => should.BeOfType<OperationCanceledException>())
+                                    should => should.BeOfType<TaskCanceledException>())
                         )
                 );
         }
@@ -264,7 +264,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .Should()
                 .BeAResult<string, Success<string>>();
         }
-        
+
         [Test]
         public async Task BindsAsyncFailWithThrownExceptionFromTaskWithCancellationToken()
         {
@@ -281,7 +281,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .Should()
                 .BeAResult<string, Fail<string>>();
         }
-        
+
         [Test]
         public async Task BindsAsyncSuccessWithExceptionFromTaskWithCancellationToken()
         {
@@ -297,6 +297,89 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .Should()
                 .BeAResult<TestException, Success<TestException>>();
+        }
+
+        [Test]
+        public Task NotBindsFailAsSuccess()
+            => Task.FromResult(Faker.Random
+                    .Number()
+                    .AsSuccess())
+                .Bind(async x =>
+                {
+                    await Task.CompletedTask;
+                    throw new TestException();
+#pragma warning disable 162
+                    return x.ToString();
+#pragma warning restore 162
+                })
+                .ContinueWith(task => task.Result
+                    .SideEffect(x => x
+                        .Should()
+                        .BeAResult<string, Fail<string>>()).Successful
+                    .Should()
+                    .BeFalse());
+
+        [Test]
+        public Task NotBindsCanceledAsSuccess()
+            => Task
+                .FromCanceled<Result<int>>(new CancellationTokenSource()
+                    .SideEffect(x => x.Cancel())
+                    .Token)
+                .Bind(async x =>
+                {
+                    await Task.CompletedTask;
+                    throw new TestException();
+#pragma warning disable 162
+                    return x.ToString();
+#pragma warning restore 162
+                })
+                .ContinueWith(task => task.Result
+                    .SideEffect(x => x
+                        .Should()
+                        .BeAResult<string, Fail<string>>()).Successful
+                    .Should()
+                    .BeFalse());
+
+        [Test]
+        public async Task BindingCanceledTaskNotThrows()
+        {
+            Func<Task<Result<string>>> func = () => Task
+                .FromCanceled<Result<int>>(new CancellationTokenSource()
+                    .SideEffect(x => x.Cancel())
+                    .Token)
+                .Bind(async x =>
+                {
+                    await Task.CompletedTask;
+                    throw new TestException();
+#pragma warning disable 162
+                    return x.ToString();
+#pragma warning restore 162
+                });
+
+            await func
+                .Should()
+                .NotThrowAsync<AggregateException>();
+            await func()
+                .ContinueWith(task => task.Result
+                    .SideEffects(x => x
+                            .Should()
+                            .BeAResult<string, Fail<string>>(),
+                        x => x.Successful
+                            .Should()
+                            .BeFalse(),
+                        x => x
+                            .As<Fail<string>>()
+                            .SideEffects(fail => fail.Exception
+                                    .Should()
+                                    .BeOfType<AggregateException>(),
+                                fail => fail.Exception
+                                    .As<AggregateException>()
+                                    .SideEffect(ae => ae
+                                        .Should()
+                                        .NotBeNull()).InnerException
+                                    .Should()
+                                    .BeOfType<TaskCanceledException>())
+                    ));
         }
     }
 }

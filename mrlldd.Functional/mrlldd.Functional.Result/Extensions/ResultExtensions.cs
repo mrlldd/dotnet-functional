@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace mrlldd.Functional.Result.Extensions
 {
-    public static class ResultExtensions
+    public static class GenericResultExtensions
     {
         public static Result<T> AsSuccess<T>(this T obj) => new Success<T>(obj);
 
@@ -24,7 +23,7 @@ namespace mrlldd.Functional.Result.Extensions
             Func<T, CancellationToken, TMapped> mapper, CancellationToken cancellationToken = default)
             => source.Successful
                 ? ExecuteSafely<T, TMapped>(source, mapper, cancellationToken)
-                : new Fail<TMapped>(source);
+                : ((Fail<T>) source).Exception;
 
         private static Result<TMapped> ExecuteSafely<T, TMapped>(T source, Func<T, TMapped> mapper)
         {
@@ -56,28 +55,33 @@ namespace mrlldd.Functional.Result.Extensions
                 ? asyncMapper(source)
                     .ContinueWith(task => task.Exception ?? task.Result.AsSuccess())
                 : Task
-                    .FromResult<Result<TMapped>>(new Fail<TMapped>(source));
+                    .FromResult<Result<TMapped>>(((Fail<T>) source).Exception);
 
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source,
             Func<T, CancellationToken, Task<TMapped>> asyncMapper, CancellationToken cancellationToken)
             => source.Successful
                 ? asyncMapper(source, cancellationToken)
+                    // ReSharper disable once MethodSupportsCancellation
                     .ContinueWith(task =>
-                        task.Exception == null ? 
-                            task.IsCanceled 
-                                ? new AggregateException(new OperationCanceledException(cancellationToken)) 
-                                : task.Result.AsSuccess() 
+                        task.Exception == null
+                            ? task.IsCanceled
+                                ? new AggregateException(new TaskCanceledException(task))
+                                : task.Result.AsSuccess()
                             : task.Exception.AsFail<TMapped>())
                 : Task
-                    .FromResult<Result<TMapped>>(new Fail<TMapped>(source));
+                    .FromResult<Result<TMapped>>(((Fail<T>) source).Exception);
 
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
             Func<T, Task<TMapped>> asyncMapper)
             => sourceTask
                 .ContinueWith(task
                     => task.Exception == null
-                        ? task.Result
-                            .Bind(asyncMapper)
+                        ? task.IsCanceled
+                            ? Task.FromResult(
+                                new AggregateException(new TaskCanceledException(sourceTask))
+                                    .AsFail<TMapped>())
+                            : task.Result
+                                .Bind(asyncMapper)
                         : Task
                             .FromResult<Result<TMapped>>(task.Exception))
                 .Unwrap();
@@ -91,6 +95,113 @@ namespace mrlldd.Functional.Result.Extensions
                             .Bind(asyncMapper, cancellationToken)
                         : Task
                             .FromResult<Result<TMapped>>(task.Exception), cancellationToken)
+                .Unwrap();
+
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
+            Func<T, TMapped> mapper)
+            => sourceTask
+                .ContinueWith(task => task.Exception ?? task.Result.Bind(mapper));
+
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
+            Func<T, CancellationToken, TMapped> mapper, CancellationToken cancellationToken)
+            => sourceTask
+                // ReSharper disable once MethodSupportsCancellation
+                .ContinueWith(task => task.Exception ?? task.Result.Bind(mapper, cancellationToken));
+
+        public static Task<Result<T>> ThenWrapAsResult<T>(this Task<T> source)
+            => source
+                .ContinueWith(task => task.Exception ?? (task.IsCanceled
+                    ? new AggregateException(new TaskCanceledException(task))
+                    : task.Result.AsSuccess())
+                );
+    }
+
+    public static class ValuelessResultExtensions
+    {
+        public static Result AsFail(this Exception exception)
+            => new Fail(exception);
+
+        public static Exception UnwrapAsFail(this Result result)
+            => result;
+
+        public static Result Bind(this Result result, Action effect)
+            => result.Successful
+                ? ExecuteSafely(effect)
+                : result;
+
+        private static Result ExecuteSafely(Action effect)
+        {
+            try
+            {
+                effect();
+                return Result.Success;
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+
+        public static Result Bind(this Result result, Action<CancellationToken> effect,
+            CancellationToken cancellationToken)
+            => result.Successful
+                ? ExecuteSafely(effect, cancellationToken)
+                : result;
+
+        private static Result ExecuteSafely(Action<CancellationToken> effect, CancellationToken cancellationToken)
+        {
+            try
+            {
+                effect(cancellationToken);
+                return Result.Success;
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+
+        public static Task<Result> Bind(this Result result, Func<Task> asyncEffect)
+            => result.Successful
+                ? asyncEffect()
+                    .ContinueWith<Result>(task => task.Exception == null
+                        ? Result.Success
+                        : new Fail(task.Exception))
+                : Task
+                    .FromResult(result);
+
+        public static Task<Result> Bind(this Result result, Func<CancellationToken, Task> asyncEffect,
+            CancellationToken cancellationToken)
+            => result.Successful
+                ? asyncEffect(cancellationToken)
+                    // ReSharper disable once MethodSupportsCancellation
+                    .ContinueWith<Result>(task => task.Exception == null
+                        ? task.IsCanceled
+                            ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                            : Result.Success
+                        : new Fail(task.Exception))
+                : Task
+                    .FromResult(result);
+
+        public static Task<Result> Bind(this Task<Result> resultTask, Func<Task> asyncEffect)
+            => resultTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
+                        : task.Result.Bind(asyncEffect)
+                    : Task
+                        .FromResult<Result>(new Fail(task.Exception)))
+                .Unwrap();
+
+        public static Task<Result> Bind(this Task<Result> resultTask, Func<CancellationToken, Task> asyncEffect,
+            CancellationToken cancellationToken)
+            => resultTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
+                        : task.Result.Bind(asyncEffect, cancellationToken)
+                    : Task
+                        .FromResult<Result>(new Fail(task.Exception)))
                 .Unwrap();
     }
 }
