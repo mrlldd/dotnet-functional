@@ -9,5 +9,10 @@ namespace mrlldd.Functional.Result.Tests.TestUtilities
             => objectAssertions
                 .SideEffects(x => x.BeOfType<TResult>(),
                     x => x.BeAssignableTo<Result<T>>());
+        
+        public static ObjectAssertions BeAResult<TResult>(this ObjectAssertions objectAssertions) where TResult : Result 
+            => objectAssertions
+                .SideEffects(x => x.BeOfType<TResult>(),
+                    x => x.BeAssignableTo<Result>());
     }
 }

@@ -16,6 +16,10 @@ namespace mrlldd.Functional.Result
         {
             return $"{base.ToString()}, exception: {Exception}";
         }
+        
+        public static implicit operator Fail(Exception exception) => new(exception);
+        
+        public static implicit operator Exception(Fail fail) => fail.Exception;
     }
     
     public sealed class Fail<T> : Result<T>

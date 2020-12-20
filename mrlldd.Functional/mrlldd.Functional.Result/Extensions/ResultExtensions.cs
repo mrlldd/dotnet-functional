@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using mrlldd.Functional.Result.Exceptions;
 
 namespace mrlldd.Functional.Result.Extensions
 {
@@ -121,6 +122,11 @@ namespace mrlldd.Functional.Result.Extensions
         public static Result AsFail(this Exception exception)
             => new Fail(exception);
 
+        public static Success UnwrapAsSuccess(this Result result)
+            => result.Successful
+                ? (Success) result
+                : throw new ResultUnwrapException("Result is not successful.");
+
         public static Exception UnwrapAsFail(this Result result)
             => result;
 
@@ -164,11 +170,13 @@ namespace mrlldd.Functional.Result.Extensions
         public static Task<Result> Bind(this Result result, Func<Task> asyncEffect)
             => result.Successful
                 ? asyncEffect()
-                    .ContinueWith<Result>(task => task.Exception == null
-                        ? Result.Success
+                    .ContinueWith(task => task.Exception == null
+                        ? task.IsCanceled ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                        : Result.Success
                         : new Fail(task.Exception))
                 : Task
                     .FromResult(result);
+
 
         public static Task<Result> Bind(this Result result, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
@@ -182,9 +190,19 @@ namespace mrlldd.Functional.Result.Extensions
                         : new Fail(task.Exception))
                 : Task
                     .FromResult(result);
+        
+        public static Task<Result> Bind(this Task sourceTask, Func<Task> asyncEffect)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
+                        : asyncEffect().ThenWrapAsResult()
+                    : Task
+                        .FromResult<Result>(new Fail(task.Exception)))
+                .Unwrap();
 
-        public static Task<Result> Bind(this Task<Result> resultTask, Func<Task> asyncEffect)
-            => resultTask
+        public static Task<Result> Bind(this Task<Result> sourceTask, Func<Task> asyncEffect)
+            => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
                         ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
@@ -193,9 +211,9 @@ namespace mrlldd.Functional.Result.Extensions
                         .FromResult<Result>(new Fail(task.Exception)))
                 .Unwrap();
 
-        public static Task<Result> Bind(this Task<Result> resultTask, Func<CancellationToken, Task> asyncEffect,
+        public static Task<Result> Bind(this Task<Result> sourceTask, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
-            => resultTask
+            => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
                         ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
@@ -203,5 +221,42 @@ namespace mrlldd.Functional.Result.Extensions
                     : Task
                         .FromResult<Result>(new Fail(task.Exception)))
                 .Unwrap();
+
+
+        public static Task<Result> Bind(this Task<Result> sourceTask, Action effect)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                        : ExecuteSafely(effect)
+                    : new Fail(task.Exception));
+
+        public static Task<Result> Bind(this Task<Result> sourceTask, Action<CancellationToken> effect,
+            CancellationToken cancellationToken)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                        : ExecuteSafely(effect, cancellationToken)
+                    : new Fail(task.Exception));
+
+        public static Task<Result> ThenWrapAsResult(this Task sourceTask)
+            => sourceTask
+                .ContinueWith(task => task.Exception ?? (task.IsCanceled
+                    ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                    : Result.Success)
+                );
+        
+        
+        /*public static Task<Result<T>> Bind<T>(this Result result, Func<Task<T>> asyncEffect)
+            => result.Successful
+                ? asyncEffect()
+                    .ContinueWith(new Func<Task<T>, Result<T>>(task => task.Exception == null
+                        ? task.IsCanceled
+                            ? new Fail<T>(new AggregateException(new TaskCanceledException(task)))
+                            : new Success<T>(task.Result)
+                        : new Fail<T>(task.Exception)))
+                : Task
+                    .FromResult(result.UnwrapAsFail().AsFail<T>());*/
     }
 }
