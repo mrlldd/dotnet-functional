@@ -1,5 +1,14 @@
 ﻿namespace mrlldd.Functional.Result
 {
+    public sealed class Success : Result
+    {
+        public override bool Successful => true;
+
+        internal Success()
+        {
+        }
+    }
+    
     public sealed class Success<T> : Result<T>
     {
         public override bool Successful => true;
@@ -12,7 +21,7 @@
         }
 
         public override string ToString() 
-            => base.ToString() + "value: " + Value;
+            => $"{base.ToString()}value: {Value}";
 
         public static implicit operator Success<T>(T value)
             => new(value);
