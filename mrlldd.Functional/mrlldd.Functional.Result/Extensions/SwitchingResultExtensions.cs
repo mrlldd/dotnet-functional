@@ -34,19 +34,22 @@ namespace mrlldd.Functional.Result.Extensions
 
         public static Task<Result> Bind<T>(this Result<T> result, Func<Task> asyncEffect)
             => result.Successful
-                ? ContinuationFactory(asyncEffect())
+                ? asyncEffect()
+                    .ThenWrapAsResult()
                 : FailResultTaskFactory(result);
 
         public static Task<Result> Bind<T>(this Result<T> result, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
             => result.Successful
-                ? ContinuationFactory(asyncEffect(cancellationToken))
+                ? asyncEffect(cancellationToken)
+                    .ThenWrapAsResult()
                 : FailResultTaskFactory(result);
 
         public static Task<Result> Bind<T>(this Result<T> result, Func<T, CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
             => result.Successful
-                ? ContinuationFactory(asyncEffect(((Success<T>) result).Value, cancellationToken))
+                ? asyncEffect(((Success<T>) result).Value, cancellationToken)
+                    .ThenWrapAsResult()
                 : FailResultTaskFactory(result);
 
         private static Task<Result> ContinuationFactory(Task sourceTask)
@@ -76,7 +79,8 @@ namespace mrlldd.Functional.Result.Extensions
 
         public static Task<Result<T>> Bind<T>(this Result result, Func<Task<T>> asyncFactory)
             => result.Successful
-                ? ContinuationFactory(asyncFactory())
+                ? asyncFactory()
+                    .ThenWrapAsResult()
                 : FailResultTaskFactory<T>(result);
 
         public static Task<Result<T>> Bind<T>(this Result result, Func<CancellationToken, Task<T>> asyncFactory,
@@ -94,8 +98,90 @@ namespace mrlldd.Functional.Result.Extensions
                     : new Fail<T>(task.Exception));
 
         private static Task<Result<T>> FailResultTaskFactory<T>(Result result)
-            => Task.FromException<Result<T>>(((Fail) result).Exception);
+            => Task.FromResult<Result<T>>(new Fail<T>(((Fail) result).Exception));
+
+        public static Task<Result> Bind<T>(this Task<Result<T>> sourceTask, Func<Task> asyncEffect)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? CanceledTaskResultFactory(task)
+                        : task.Result.Successful
+                            ? asyncEffect()
+                                .ThenWrapAsResult()
+                            : FailResultTaskFactory(task.Result)
+                    : ExceptionFailResultTaskFactory(task.Exception))
+                .Unwrap();
+
+        public static Task<Result> Bind<T>(this Task<Result<T>> sourceTask, Func<CancellationToken, Task> asyncEffect,
+            CancellationToken cancellationToken)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? CanceledTaskResultFactory(task)
+                        : task.Result.Successful
+                            ? asyncEffect(cancellationToken)
+                                .ThenWrapAsResult()
+                            : FailResultTaskFactory(task.Result)
+                    : ExceptionFailResultTaskFactory(task.Exception))
+                .Unwrap();
+
+        public static Task<Result> Bind<T>(this Task<Result<T>> sourceTask, Func<T, Task> asyncEffect)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? CanceledTaskResultFactory(task)
+                        : task.Result.Successful
+                            ? asyncEffect(((Success<T>) task.Result).Value)
+                                .ThenWrapAsResult()
+                            : FailResultTaskFactory(task.Result)
+                    : ExceptionFailResultTaskFactory(task.Exception))
+                .Unwrap();
+
+        public static Task<Result> Bind<T>(this Task<Result<T>> sourceTask,
+            Func<T, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? CanceledTaskResultFactory(task)
+                        : task.Result.Successful
+                            ? asyncEffect(((Success<T>) task.Result).Value, cancellationToken)
+                                .ThenWrapAsResult()
+                            : FailResultTaskFactory(task.Result)
+                    : ExceptionFailResultTaskFactory(task.Exception))
+                .Unwrap();
+
+        private static Task<Result> CanceledTaskResultFactory(Task task)
+            => Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))));
+
+        private static Task<Result> ExceptionFailResultTaskFactory(Exception exception)
+            => Task.FromResult<Result>(new Fail(exception));
+
+        public static Task<Result<T>> Bind<T>(this Task<Result> sourceTask, Func<Task<T>> asyncFactory)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? CanceledTaskResultFactory<T>(task)
+                        : task.Result
+                            .Bind(asyncFactory)
+                    : ExceptionFailResultTaskFactory<T>(task.Exception))
+                .Unwrap();
         
-        // todo binders from task to task
+        public static Task<Result<T>> Bind<T>(this Task<Result> sourceTask, Func<CancellationToken, Task<T>> asyncFactory, CancellationToken cancellationToken)
+            => sourceTask
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? CanceledTaskResultFactory<T>(task)
+                        : task.Result.Successful
+                            ? ContinuationFactory(asyncFactory(cancellationToken))
+                            : FailResultTaskFactory<T>(task.Result)
+                    : ExceptionFailResultTaskFactory<T>(task.Exception))
+                .Unwrap();
+        
+        private static Task<Result<T>> CanceledTaskResultFactory<T>(Task task)
+            => Task
+                .FromResult<Result<T>>(new Fail<T>(new AggregateException(new TaskCanceledException(task))));
+        
+        private static Task<Result<T>> ExceptionFailResultTaskFactory<T>(Exception exception)
+            => Task.FromResult<Result<T>>(new Fail<T>(exception));
     }
 }

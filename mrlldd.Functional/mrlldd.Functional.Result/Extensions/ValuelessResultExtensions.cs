@@ -120,11 +120,31 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
         
+        public static Result SideEffectIfSuccessful(this Result result, Action<CancellationToken> effect, CancellationToken cancellationToken)
+        {
+            if (result.Successful)
+            {
+                effect(cancellationToken);
+            }
+
+            return result;
+        }
+        
         public static async Task<Result> SideEffectIfSuccessfulAsync(this Result result, Func<Task> effect)
         {
             if (result.Successful)
             {
                 await effect();
+            }
+
+            return result;
+        }
+        
+        public static async Task<Result> SideEffectIfSuccessfulAsync(this Result result, Func<CancellationToken, Task> effect, CancellationToken cancellationToken)
+        {
+            if (result.Successful)
+            {
+                await effect(cancellationToken);
             }
 
             return result;
@@ -140,11 +160,31 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
         
+        public static Result SideEffectIfNotSuccessful(this Result result, Action<CancellationToken> effect, CancellationToken cancellationToken)
+        {
+            if (!result.Successful)
+            {
+                effect(cancellationToken);
+            }
+
+            return result;
+        }
+        
         public static Result SideEffectIfNotSuccessful(this Result result, Action<Exception> effect)
         {
             if (!result.Successful)
             {
                 effect(((Fail) result).Exception);
+            }
+
+            return result;
+        }
+
+        public static Result SideEffectIfNotSuccessful(this Result result, Action<Exception, CancellationToken> effect, CancellationToken cancellationToken)
+        {
+            if (!result.Successful)
+            {
+                effect(((Fail) result).Exception, cancellationToken);
             }
 
             return result;
@@ -160,6 +200,16 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
         
+        public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+        {
+            if (!result.Successful)
+            {
+                await asyncEffect(cancellationToken);
+            }
+
+            return result;
+        }
+        
         public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<Exception, Task> asyncEffect)
         {
             if (!result.Successful)
@@ -170,15 +220,14 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
         
-        /*public static Task<Result<T>> Bind<T>(this Result result, Func<Task<T>> asyncEffect)
-            => result.Successful
-                ? asyncEffect()
-                    .ContinueWith(new Func<Task<T>, Result<T>>(task => task.Exception == null
-                        ? task.IsCanceled
-                            ? new Fail<T>(new AggregateException(new TaskCanceledException(task)))
-                            : new Success<T>(task.Result)
-                        : new Fail<T>(task.Exception)))
-                : Task
-                    .FromResult(result.UnwrapAsFail().AsFail<T>());*/
+        public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+        {
+            if (!result.Successful)
+            {
+                await asyncEffect(((Fail) result).Exception, cancellationToken);
+            }
+
+            return result;
+        }
     }
 }

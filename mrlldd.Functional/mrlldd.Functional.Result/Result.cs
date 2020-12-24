@@ -38,7 +38,7 @@ namespace mrlldd.Functional.Result
                 : ((Fail<T>) result).Exception;
 
         public override string ToString()
-            => "Success: " + Successful + ", ";
+            => $"Success: {Successful}, ";
 
         public static implicit operator Result<T>(Exception exception)
             => new Fail<T>(exception);

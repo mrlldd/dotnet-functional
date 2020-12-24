@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Primitives;
+using Moq;
 using mrlldd.Functional.Result.Extensions;
 using mrlldd.Functional.Result.Tests.TestUtilities;
 using mrlldd.Functional.Tests.Core;
@@ -506,5 +508,431 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                         .Be(target)
                 );
         }
+
+        [Test]
+        public async Task PerformsSideEffectsOnSuccessfulResults()
+        {
+            var moqed = new Mock<ISideEffectsWrapper<object>>();
+            var token = new CancellationTokenSource().Token;
+            var obj = new object();
+            moqed
+                .Setup(x => x.Effect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.ArgumentedEffect(It.Is<object>(o => o == obj)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableArgumentedEffect(It.Is<object>(o => o == obj), It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            moqed
+                .Setup(x => x.AsyncEffect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.ArgumentedEffectAsync(It.Is<object>(o => o == obj)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableArgumentedEffectAsync(It.Is<object>(o => o == obj), It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            var result = obj.AsSuccess();
+            result
+                .SideEffectIfSuccessful(moqed.Object.Effect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result))
+                .SideEffectIfSuccessful(moqed.Object.ArgumentedEffect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result))
+                .SideEffectIfSuccessful(moqed.Object.CancellableEffect, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result))
+                .SideEffectIfSuccessful(moqed.Object.CancellableArgumentedEffect, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncEffect)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(result));
+            moqed
+                .Verify(x => x.Effect(), Times.Once);
+            moqed
+                .Verify(x => x.ArgumentedEffect(It.Is<object>(o => o == obj)), Times.Once);
+            moqed
+                .Verify(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Once);
+            moqed
+                .Verify(x => x.CancellableArgumentedEffect(It.Is<object>(o => o == obj),It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Once);
+            moqed
+                .Verify(x => x.AsyncEffect(), Times.Once);
+            moqed
+                .Verify(x => x.ArgumentedEffectAsync(It.Is<object>(o => o == obj)), Times.Once);
+            moqed
+                .Verify(x => x.AsyncCancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Once);
+            moqed
+                .Verify(x => x.CancellableArgumentedEffectAsync(It.Is<object>(o => o == obj), It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Once);
+        }
+        
+        [Test]
+        public async Task NotPerformsSideEffectOnSuccessfulResults()
+        {
+            var moqed = new Mock<ISideEffectsWrapper<int>>();
+            moqed
+                .Setup(x => x.Effect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.IsAny<CancellationToken>())
+                )
+                .Verifiable();
+            moqed
+                .Setup(x => x.AsyncEffect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.IsAny<CancellationToken>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffectPopulatedWithException(It.IsAny<TestException>(),
+                    It.IsAny<CancellationToken>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.EffectPopulatedWithException(It.IsAny<TestException>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffectPopulatedWithExceptionAsync(It.IsAny<TestException>(),
+                    It.IsAny<CancellationToken>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.EffectPopulatedWithExceptionAsync(It.IsAny<TestException>()))
+                .Verifiable();
+            var result = Faker.Random
+                .Number()
+                .AsSuccess();
+            result
+                .SideEffectIfNotSuccessful(moqed.Object.Effect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result))
+                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffect, CancellationToken.None)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result))
+                .SideEffectIfNotSuccessful(moqed.Object.EffectPopulatedWithException)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result))
+                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffectPopulatedWithException, CancellationToken.None)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncEffect)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.CancellableEffectPopulatedWithExceptionAsync,
+                    CancellationToken.None)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(result));
+            await result
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncCancellableEffect, CancellationToken.None);
+            moqed
+                .Verify(x => x.Effect(), Times.Never);
+            moqed
+                .Verify(x => x.CancellableEffect(It.IsAny<CancellationToken>()), Times.Never);
+            moqed
+                .Verify(x => x.AsyncEffect(), Times.Never);
+            moqed
+                .Verify(x => x.AsyncCancellableEffect(It.IsAny<CancellationToken>()), Times.Never);
+            moqed
+                .Verify(
+                    x => x.CancellableEffectPopulatedWithException(It.IsAny<TestException>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
+            moqed
+                .Verify(
+                    x => x.CancellableEffectPopulatedWithExceptionAsync(It.IsAny<TestException>(),
+                        It.IsAny<CancellationToken>()), Times.Never);
+            moqed
+                .Verify(
+                    x => x.EffectPopulatedWithExceptionAsync(It.IsAny<TestException>()), Times.Never);
+            moqed
+                .Verify(
+                    x => x.EffectPopulatedWithException(It.IsAny<TestException>()), Times.Never);
+        }
+        
+        [Test]
+        public async Task NotPerformsSideEffectOnNotSuccessfulResults()
+        {
+            var moqed = new Mock<ISideEffectsWrapper<object>>();
+            var token = new CancellationTokenSource().Token;
+            moqed
+                .Setup(x => x.Effect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.ArgumentedEffect(It.IsAny<object>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableArgumentedEffect(It.IsAny<object>(), It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            moqed
+                .Setup(x => x.AsyncEffect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.ArgumentedEffectAsync(It.IsAny<object>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableArgumentedEffectAsync(It.IsAny<object>(), It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))))
+                .Verifiable();
+            var fail = new TestException()
+                .AsFail<object>();
+            fail
+                .SideEffectIfSuccessful(moqed.Object.Effect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfSuccessful(moqed.Object.ArgumentedEffect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfSuccessful(moqed.Object.CancellableEffect, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfSuccessful(moqed.Object.CancellableArgumentedEffect, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncEffect)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            moqed
+                .Verify(x => x.Effect(), Times.Never);
+            moqed
+                .Verify(x => x.ArgumentedEffect(It.IsAny<object>()), Times.Never);
+            moqed
+                .Verify(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Never);
+            moqed
+                .Verify(x => x.CancellableArgumentedEffect(It.IsAny<object>(),It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Never);
+            moqed
+                .Verify(x => x.AsyncEffect(), Times.Never);
+            moqed
+                .Verify(x => x.ArgumentedEffectAsync(It.IsAny<object>()), Times.Never);
+            moqed
+                .Verify(x => x.AsyncCancellableEffect(It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Never);
+            moqed
+                .Verify(x => x.CancellableArgumentedEffectAsync(It.IsAny<object>(), It.Is<CancellationToken>(ct => ct.Equals(token))), Times.Never);
+        }
+
+        [Test]
+        public async Task PerformsSideEffectOnNotSuccessfulResults()
+        {
+            var moqed = new Mock<ISideEffectsWrapper<object>>();
+            var token = new CancellationTokenSource().Token;
+            var obj = new object();
+            moqed
+                .Setup(x => x.Effect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.ArgumentedEffect(It.IsAny<object>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct == token)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableArgumentedEffect(It.IsAny<object>(),It.Is<CancellationToken>(ct => ct == token)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.AsyncEffect())
+                .Verifiable();
+            moqed
+                .Setup(x => x.ArgumentedEffectAsync(It.IsAny<object>()))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableArgumentedEffectAsync(It.IsAny<object>(), It.Is<CancellationToken>(ct => ct == token)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct == token)))
+                .Verifiable();
+            var exception = new TestException();
+            moqed
+                .Setup(x => x.EffectPopulatedWithException(It.Is<TestException>(te => te == exception)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffectPopulatedWithException(It.Is<TestException>(te => te == exception),
+                    It.Is<CancellationToken>(ct => ct == token)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.CancellableEffectPopulatedWithExceptionAsync(It.Is<TestException>(te => te == exception),
+                    It.Is<CancellationToken>(ct => ct == token)))
+                .Verifiable();
+            moqed
+                .Setup(x => x.EffectPopulatedWithExceptionAsync(It.Is<TestException>(te => te == exception)))
+                .Verifiable();
+            var fail = exception
+                .AsFail<object>();
+            fail
+                .SideEffectIfNotSuccessful(moqed.Object.Effect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfNotSuccessful(moqed.Object.ArgumentedEffect)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffect, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfNotSuccessful(moqed.Object.CancellableArgumentedEffect, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfNotSuccessful(moqed.Object.EffectPopulatedWithException)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail))
+                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffectPopulatedWithException, token)
+                .SideEffect(x => x
+                    .Should()
+                    .BeSameAs(fail));
+
+            await fail
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncEffect)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.CancellableEffectPopulatedWithExceptionAsync, token)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            await fail
+                .SideEffectIfNotSuccessfulAsync(moqed.Object.EffectPopulatedWithExceptionAsync)
+                .ContinueWith(x => x.Result
+                    .Should()
+                    .BeSameAs(fail));
+            moqed
+                .Verify(x => x.Effect(), Times.Once);
+            moqed
+                .Verify(x => x.ArgumentedEffect(It.IsAny<object>()), Times.Once);
+            moqed
+                .Verify(x => x.CancellableEffect(It.Is<CancellationToken>(ct => ct == token)), Times.Once);
+            moqed
+                .Verify(x => x.CancellableArgumentedEffect(It.IsAny<object>(),It.Is<CancellationToken>(ct => ct == token)), Times.Once);
+            moqed
+                .Verify(
+                    x => x.CancellableEffectPopulatedWithException(It.Is<TestException>(te => te == exception),
+                        It.Is<CancellationToken>(ct => ct == token)), Times.Once);
+
+            moqed
+                .Verify(
+                    x => x.EffectPopulatedWithException(It.Is<TestException>(te => te == exception)), Times.Once);
+
+            moqed
+                .Verify(x => x.AsyncEffect(), Times.Once);
+            moqed
+                .Verify(x => x.ArgumentedEffectAsync(It.IsAny<object>()), Times.Once);
+            moqed
+                .Verify(x => x.AsyncCancellableEffect(It.Is<CancellationToken>(ct => ct == token)), Times.Once);
+            moqed
+                .Verify(x => x.CancellableArgumentedEffectAsync(It.IsAny<object>(),It.Is<CancellationToken>(ct => ct == token)), Times.Once);
+            moqed
+                .Verify(
+                    x => x.CancellableEffectPopulatedWithExceptionAsync(It.Is<TestException>(te => te == exception),
+                        It.Is<CancellationToken>(ct => ct == token)), Times.Once);
+            moqed
+                .Verify(
+                    x => x.EffectPopulatedWithExceptionAsync(It.Is<TestException>(te => te == exception)), Times.Once);
+        }
+        
+
+        public interface ISideEffectsWrapper<T>
+        {
+            void Effect();
+            void ArgumentedEffect(T arg);
+            void CancellableEffect(CancellationToken cancellationToken);
+
+            void CancellableArgumentedEffect(T arg, CancellationToken cancellationToken);
+            
+            void EffectPopulatedWithException(Exception exception);
+
+            void CancellableEffectPopulatedWithException(Exception exception,
+                CancellationToken cancellationToken);
+
+            Task AsyncEffect();
+
+            Task AsyncCancellableEffect(CancellationToken cancellationToken);
+
+            Task EffectPopulatedWithExceptionAsync(Exception exception);
+
+            Task CancellableEffectPopulatedWithExceptionAsync(Exception exception,
+                CancellationToken cancellationToken);
+
+            Task ArgumentedEffectAsync(T arg);
+
+            Task CancellableArgumentedEffectAsync(T arg, CancellationToken cancellationToken);
+        }
+        
     }
 }
