@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using mrlldd.Functional.Result.Exceptions;
+using mrlldd.Functional.Result.Internal;
 using mrlldd.Functional.Result.Internal.Utilities;
 
 namespace mrlldd.Functional.Result.Extensions
@@ -34,9 +35,10 @@ namespace mrlldd.Functional.Result.Extensions
             => result.Successful
                 ? asyncEffect()
                     .ContinueWith(task => task.Exception == null
-                        ? task.IsCanceled ? new Fail(new AggregateException(new TaskCanceledException(task)))
-                        : Result.Success
-                        : new Fail(task.Exception))
+                        ? task.IsCanceled
+                            ? ResultFactory.ValuelessCanceled(task)
+                            : Result.Success
+                        : ResultFactory.ValuelessException(task.Exception))
                 : Task
                     .FromResult(result);
 
@@ -46,32 +48,30 @@ namespace mrlldd.Functional.Result.Extensions
             => result.Successful
                 ? asyncEffect(cancellationToken)
                     // ReSharper disable once MethodSupportsCancellation
-                    .ContinueWith<Result>(task => task.Exception == null
+                    .ContinueWith(task => task.Exception == null
                         ? task.IsCanceled
-                            ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                            ? ResultFactory.ValuelessCanceled(task)
                             : Result.Success
-                        : new Fail(task.Exception))
+                        : ResultFactory.ValuelessException(task.Exception))
                 : Task
                     .FromResult(result);
-        
+
         public static Task<Result> Bind(this Task sourceTask, Func<Task> asyncEffect)
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
+                        ? ResultFactory.ValuelessCanceledTask(task)
                         : asyncEffect().ThenWrapAsResult()
-                    : Task
-                        .FromResult<Result>(new Fail(task.Exception)))
+                    : ResultFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<Task> asyncEffect)
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
+                        ? ResultFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect)
-                    : Task
-                        .FromResult<Result>(new Fail(task.Exception)))
+                    : ResultFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<CancellationToken, Task> asyncEffect,
@@ -79,10 +79,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Task.FromResult<Result>(new Fail(new AggregateException(new TaskCanceledException(task))))
+                        ? ResultFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect, cancellationToken)
-                    : Task
-                        .FromResult<Result>(new Fail(task.Exception)))
+                    : ResultFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
 
@@ -90,27 +89,27 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                        ? ResultFactory.ValuelessCanceled(task)
                         : Execute.Safely(effect)
-                    : new Fail(task.Exception));
+                    : ResultFactory.ValuelessException(task.Exception));
 
         public static Task<Result> Bind(this Task<Result> sourceTask, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                        ? ResultFactory.ValuelessCanceled(task)
                         : Execute.Safely(effect, cancellationToken)
-                    : new Fail(task.Exception));
+                    : ResultFactory.ValuelessException(task.Exception));
 
         public static Task<Result> ThenWrapAsResult(this Task sourceTask)
             => sourceTask
                 .ContinueWith(task => task.Exception ?? (task.IsCanceled
-                    ? new Fail(new AggregateException(new TaskCanceledException(task)))
+                    ? ResultFactory.ValuelessCanceled(task)
                     : Result.Success)
                 );
 
-        public static Result SideEffectIfSuccessful(this Result result, Action effect)
+        public static Result EffectIfSuccessful(this Result result, Action effect)
         {
             if (result.Successful)
             {
@@ -119,8 +118,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result SideEffectIfSuccessful(this Result result, Action<CancellationToken> effect, CancellationToken cancellationToken)
+
+        public static Result EffectIfSuccessful(this Result result, Action<CancellationToken> effect,
+            CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
@@ -129,8 +129,8 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result> SideEffectIfSuccessfulAsync(this Result result, Func<Task> effect)
+
+        public static async Task<Result> EffectIfSuccessfulAsync(this Result result, Func<Task> effect)
         {
             if (result.Successful)
             {
@@ -139,8 +139,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result> SideEffectIfSuccessfulAsync(this Result result, Func<CancellationToken, Task> effect, CancellationToken cancellationToken)
+
+        public static async Task<Result> EffectIfSuccessfulAsync(this Result result,
+            Func<CancellationToken, Task> effect, CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
@@ -150,7 +151,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static Result SideEffectIfNotSuccessful(this Result result, Action effect)
+        public static Result EffectIfNotSuccessful(this Result result, Action effect)
         {
             if (!result.Successful)
             {
@@ -159,8 +160,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result SideEffectIfNotSuccessful(this Result result, Action<CancellationToken> effect, CancellationToken cancellationToken)
+
+        public static Result EffectIfNotSuccessful(this Result result, Action<CancellationToken> effect,
+            CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {
@@ -169,8 +171,8 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result SideEffectIfNotSuccessful(this Result result, Action<Exception> effect)
+
+        public static Result EffectIfNotSuccessful(this Result result, Action<Exception> effect)
         {
             if (!result.Successful)
             {
@@ -180,7 +182,8 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static Result SideEffectIfNotSuccessful(this Result result, Action<Exception, CancellationToken> effect, CancellationToken cancellationToken)
+        public static Result EffectIfNotSuccessful(this Result result, Action<Exception, CancellationToken> effect,
+            CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {
@@ -189,8 +192,8 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<Task> asyncEffect)
+
+        public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result, Func<Task> asyncEffect)
         {
             if (!result.Successful)
             {
@@ -199,8 +202,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+
+        public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
+            Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {
@@ -209,8 +213,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<Exception, Task> asyncEffect)
+
+        public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
+            Func<Exception, Task> asyncEffect)
         {
             if (!result.Successful)
             {
@@ -219,8 +224,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result> SideEffectIfNotSuccessfulAsync(this Result result, Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+
+        public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
+            Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {

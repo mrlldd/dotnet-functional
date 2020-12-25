@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using mrlldd.Functional.Result.Internal;
 using mrlldd.Functional.Result.Internal.Utilities;
 
 namespace mrlldd.Functional.Result.Extensions
@@ -15,37 +16,35 @@ namespace mrlldd.Functional.Result.Extensions
 
         public static Exception UnwrapAsFail<T>(this Result<T> result) => result;
 
-        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source, Func<T, TMapped> mapper)
-            => source.Successful
-                ? Execute.Safely(((Success<T>)source).Value, mapper)
-                : new Fail<TMapped>((Fail<T>)source);
+        public static Result<TMapped> Bind<T, TMapped>(this Result<T> result, Func<T, TMapped> mapper)
+            => result.Successful
+                ? Execute.Safely(((Success<T>) result).Value, mapper)
+                : ResultFactory.GenericException<TMapped>(((Fail<T>) result).Exception);
 
-        public static Result<TMapped> Bind<T, TMapped>(this Result<T> source,
+        public static Result<TMapped> Bind<T, TMapped>(this Result<T> result,
             Func<T, CancellationToken, TMapped> mapper, CancellationToken cancellationToken = default)
-            => source.Successful
-                ? Execute.Safely(((Success<T>)source).Value, mapper, cancellationToken)
-                : ((Fail<T>) source).Exception;
+            => result.Successful
+                ? Execute.Safely(((Success<T>) result).Value, mapper, cancellationToken)
+                : ResultFactory.GenericException<TMapped>(((Fail<T>) result).Exception);
 
-        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source, Func<T, Task<TMapped>> asyncMapper)
-            => source.Successful
-                ? asyncMapper(((Success<T>)source).Value)
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> result, Func<T, Task<TMapped>> asyncMapper)
+            => result.Successful
+                ? asyncMapper(((Success<T>) result).Value)
                     .ThenWrapAsResult()
-                : Task
-                    .FromResult<Result<TMapped>>(new Fail<TMapped>(((Fail<T>) source).Exception));
+                : ResultFactory.GenericExceptionTask<TMapped>(((Fail<T>) result).Exception);
 
-        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> source,
+        public static Task<Result<TMapped>> Bind<T, TMapped>(this Result<T> result,
             Func<T, CancellationToken, Task<TMapped>> asyncMapper, CancellationToken cancellationToken)
-            => source.Successful
-                ? asyncMapper(source, cancellationToken)
+            => result.Successful
+                ? asyncMapper(result, cancellationToken)
                     // ReSharper disable once MethodSupportsCancellation
                     .ContinueWith(task =>
                         task.Exception == null
                             ? task.IsCanceled
-                                ? new AggregateException(new TaskCanceledException(task))
+                                ? ResultFactory.GenericCanceled<TMapped>(task)
                                 : task.Result.AsSuccess()
-                            : task.Exception.AsFail<TMapped>())
-                : Task
-                    .FromResult<Result<TMapped>>(new Fail<TMapped>(((Fail<T>) source).Exception));
+                            : ResultFactory.GenericException<TMapped>(task.Exception))
+                : ResultFactory.GenericExceptionTask<TMapped>(((Fail<T>) result).Exception);
 
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
             Func<T, Task<TMapped>> asyncMapper)
@@ -53,13 +52,10 @@ namespace mrlldd.Functional.Result.Extensions
                 .ContinueWith(task
                     => task.Exception == null
                         ? task.IsCanceled
-                            ? Task.FromResult(
-                                new AggregateException(new TaskCanceledException(sourceTask))
-                                    .AsFail<TMapped>())
+                            ? ResultFactory.GenericCanceledTask<TMapped>(task)
                             : task.Result
                                 .Bind(asyncMapper)
-                        : Task
-                            .FromResult<Result<TMapped>>(new Fail<TMapped>(task.Exception)))
+                        : ResultFactory.GenericExceptionTask<TMapped>(task.Exception))
                 .Unwrap();
 
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
@@ -67,10 +63,11 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task
                     => task.Exception == null
-                        ? task.Result
-                            .Bind(asyncMapper, cancellationToken)
-                        : Task
-                            .FromResult<Result<TMapped>>(new Fail<TMapped>(task.Exception)), cancellationToken)
+                        ? task.IsCanceled
+                            ? ResultFactory.GenericCanceledTask<TMapped>(task)
+                            : task.Result
+                                .Bind(asyncMapper, cancellationToken)
+                        : ResultFactory.GenericExceptionTask<TMapped>(task.Exception))
                 .Unwrap();
 
         public static Task<Result<TMapped>> Bind<T, TMapped>(this Task<Result<T>> sourceTask,
@@ -86,12 +83,14 @@ namespace mrlldd.Functional.Result.Extensions
 
         public static Task<Result<T>> ThenWrapAsResult<T>(this Task<T> source)
             => source
-                .ContinueWith(task => task.Exception ?? (task.IsCanceled
-                    ? new AggregateException(new TaskCanceledException(task))
-                    : task.Result.AsSuccess())
+                .ContinueWith(task => task.Exception == null
+                    ? task.IsCanceled
+                        ? ResultFactory.GenericCanceled<T>(task)
+                        : task.Result.AsSuccess()
+                    : ResultFactory.GenericException<T>(task.Exception)
                 );
 
-        public static Result<T> SideEffectIfSuccessful<T>(this Result<T> result, Action effect)
+        public static Result<T> EffectIfSuccessful<T>(this Result<T> result, Action effect)
         {
             if (result.Successful)
             {
@@ -100,8 +99,8 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result<T> SideEffectIfSuccessful<T>(this Result<T> result, Action<T> effect)
+
+        public static Result<T> EffectIfSuccessful<T>(this Result<T> result, Action<T> effect)
         {
             if (result.Successful)
             {
@@ -110,8 +109,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result<T> SideEffectIfSuccessful<T>(this Result<T> result, Action<CancellationToken> effect, CancellationToken cancellationToken)
+
+        public static Result<T> EffectIfSuccessful<T>(this Result<T> result, Action<CancellationToken> effect,
+            CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
@@ -121,7 +121,8 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static Result<T> SideEffectIfSuccessful<T>(this Result<T> result, Action<T, CancellationToken> effect, CancellationToken cancellationToken)
+        public static Result<T> EffectIfSuccessful<T>(this Result<T> result, Action<T, CancellationToken> effect,
+            CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
@@ -131,27 +132,30 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static async Task<Result<T>> SideEffectIfSuccessfulAsync<T>(this Result<T> result, Func<Task> asyncEffect)
+        public static async Task<Result<T>> EffectIfSuccessfulAsync<T>(this Result<T> result,
+            Func<Task> asyncEffect)
         {
             if (result.Successful)
             {
                 await asyncEffect();
             }
-            
+
             return result;
         }
-        
-        public static async Task<Result<T>> SideEffectIfSuccessfulAsync<T>(this Result<T> result, Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+
+        public static async Task<Result<T>> EffectIfSuccessfulAsync<T>(this Result<T> result,
+            Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
                 await asyncEffect(cancellationToken);
             }
-            
+
             return result;
         }
 
-        public static async Task<Result<T>> SideEffectIfSuccessfulAsync<T>(this Result<T> result, Func<T, Task> asyncEffect)
+        public static async Task<Result<T>> EffectIfSuccessfulAsync<T>(this Result<T> result,
+            Func<T, Task> asyncEffect)
         {
             if (result.Successful)
             {
@@ -160,8 +164,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result<T>> SideEffectIfSuccessfulAsync<T>(this Result<T> result, Func<T, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+
+        public static async Task<Result<T>> EffectIfSuccessfulAsync<T>(this Result<T> result,
+            Func<T, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
@@ -171,7 +176,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static Result<T> SideEffectIfNotSuccessful<T>(this Result<T> result, Action effect)
+        public static Result<T> EffectIfNotSuccessful<T>(this Result<T> result, Action effect)
         {
             if (!result.Successful)
             {
@@ -180,8 +185,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result<T> SideEffectIfNotSuccessful<T>(this Result<T> result, Action<CancellationToken> effect, CancellationToken cancellationToken)
+
+        public static Result<T> EffectIfNotSuccessful<T>(this Result<T> result, Action<CancellationToken> effect,
+            CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {
@@ -191,7 +197,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static Result<T> SideEffectIfNotSuccessful<T>(this Result<T> result, Action<Exception> effect)
+        public static Result<T> EffectIfNotSuccessful<T>(this Result<T> result, Action<Exception> effect)
         {
             if (!result.Successful)
             {
@@ -200,8 +206,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static Result<T> SideEffectIfNotSuccessful<T>(this Result<T> result, Action<Exception, CancellationToken> effect, CancellationToken cancellationToken)
+
+        public static Result<T> EffectIfNotSuccessful<T>(this Result<T> result,
+            Action<Exception, CancellationToken> effect, CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {
@@ -210,8 +217,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result<T>> SideEffectIfNotSuccessfulAsync<T>(this Result<T> result, Func<Task> asyncEffect)
+
+        public static async Task<Result<T>> EffectIfNotSuccessfulAsync<T>(this Result<T> result,
+            Func<Task> asyncEffect)
         {
             if (!result.Successful)
             {
@@ -221,7 +229,8 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
-        public static async Task<Result<T>> SideEffectIfNotSuccessfulAsync<T>(this Result<T> result, Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+        public static async Task<Result<T>> EffectIfNotSuccessfulAsync<T>(this Result<T> result,
+            Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {
@@ -230,8 +239,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result<T>> SideEffectIfNotSuccessfulAsync<T>(this Result<T> result, Func<Exception, Task> asyncEffect)
+
+        public static async Task<Result<T>> EffectIfNotSuccessfulAsync<T>(this Result<T> result,
+            Func<Exception, Task> asyncEffect)
         {
             if (!result.Successful)
             {
@@ -240,8 +250,9 @@ namespace mrlldd.Functional.Result.Extensions
 
             return result;
         }
-        
-        public static async Task<Result<T>> SideEffectIfNotSuccessfulAsync<T>(this Result<T> result, Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
+
+        public static async Task<Result<T>> EffectIfNotSuccessfulAsync<T>(this Result<T> result,
+            Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (!result.Successful)
             {

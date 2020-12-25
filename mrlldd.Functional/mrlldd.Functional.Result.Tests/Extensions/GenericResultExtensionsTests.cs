@@ -541,39 +541,39 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .Verifiable();
             var result = obj.AsSuccess();
             result
-                .SideEffectIfSuccessful(moqed.Object.Effect)
+                .EffectIfSuccessful(moqed.Object.Effect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result))
-                .SideEffectIfSuccessful(moqed.Object.ArgumentedEffect)
+                .EffectIfSuccessful(moqed.Object.ArgumentedEffect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result))
-                .SideEffectIfSuccessful(moqed.Object.CancellableEffect, token)
+                .EffectIfSuccessful(moqed.Object.CancellableEffect, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result))
-                .SideEffectIfSuccessful(moqed.Object.CancellableArgumentedEffect, token)
+                .EffectIfSuccessful(moqed.Object.CancellableArgumentedEffect, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncEffect)
+                .EffectIfSuccessfulAsync(moqed.Object.AsyncEffect)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
+                .EffectIfSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
+                .EffectIfSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
+                .EffectIfSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(result));
@@ -630,35 +630,35 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .Number()
                 .AsSuccess();
             result
-                .SideEffectIfNotSuccessful(moqed.Object.Effect)
+                .EffectIfNotSuccessful(moqed.Object.Effect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result))
-                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffect, CancellationToken.None)
+                .EffectIfNotSuccessful(moqed.Object.CancellableEffect, CancellationToken.None)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result))
-                .SideEffectIfNotSuccessful(moqed.Object.EffectPopulatedWithException)
+                .EffectIfNotSuccessful(moqed.Object.EffectPopulatedWithException)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result))
-                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffectPopulatedWithException, CancellationToken.None)
+                .EffectIfNotSuccessful(moqed.Object.CancellableEffectPopulatedWithException, CancellationToken.None)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncEffect)
+                .EffectIfNotSuccessfulAsync(moqed.Object.AsyncEffect)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.CancellableEffectPopulatedWithExceptionAsync,
+                .EffectIfNotSuccessfulAsync(moqed.Object.CancellableEffectPopulatedWithExceptionAsync,
                     CancellationToken.None)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(result));
             await result
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncCancellableEffect, CancellationToken.None);
+                .EffectIfNotSuccessfulAsync(moqed.Object.AsyncCancellableEffect, CancellationToken.None);
             moqed
                 .Verify(x => x.Effect(), Times.Never);
             moqed
@@ -715,39 +715,39 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             var fail = new TestException()
                 .AsFail<object>();
             fail
-                .SideEffectIfSuccessful(moqed.Object.Effect)
+                .EffectIfSuccessful(moqed.Object.Effect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfSuccessful(moqed.Object.ArgumentedEffect)
+                .EffectIfSuccessful(moqed.Object.ArgumentedEffect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfSuccessful(moqed.Object.CancellableEffect, token)
+                .EffectIfSuccessful(moqed.Object.CancellableEffect, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfSuccessful(moqed.Object.CancellableArgumentedEffect, token)
+                .EffectIfSuccessful(moqed.Object.CancellableArgumentedEffect, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncEffect)
+                .EffectIfSuccessfulAsync(moqed.Object.AsyncEffect)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
+                .EffectIfSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
+                .EffectIfSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
+                .EffectIfSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
@@ -817,58 +817,58 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             var fail = exception
                 .AsFail<object>();
             fail
-                .SideEffectIfNotSuccessful(moqed.Object.Effect)
+                .EffectIfNotSuccessful(moqed.Object.Effect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfNotSuccessful(moqed.Object.ArgumentedEffect)
+                .EffectIfNotSuccessful(moqed.Object.ArgumentedEffect)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffect, token)
+                .EffectIfNotSuccessful(moqed.Object.CancellableEffect, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfNotSuccessful(moqed.Object.CancellableArgumentedEffect, token)
+                .EffectIfNotSuccessful(moqed.Object.CancellableArgumentedEffect, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfNotSuccessful(moqed.Object.EffectPopulatedWithException)
+                .EffectIfNotSuccessful(moqed.Object.EffectPopulatedWithException)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail))
-                .SideEffectIfNotSuccessful(moqed.Object.CancellableEffectPopulatedWithException, token)
+                .EffectIfNotSuccessful(moqed.Object.CancellableEffectPopulatedWithException, token)
                 .SideEffect(x => x
                     .Should()
                     .BeSameAs(fail));
 
             await fail
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncEffect)
+                .EffectIfNotSuccessfulAsync(moqed.Object.AsyncEffect)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
+                .EffectIfNotSuccessfulAsync(moqed.Object.ArgumentedEffectAsync)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
+                .EffectIfNotSuccessfulAsync(moqed.Object.AsyncCancellableEffect, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
+                .EffectIfNotSuccessfulAsync(moqed.Object.CancellableArgumentedEffectAsync, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.CancellableEffectPopulatedWithExceptionAsync, token)
+                .EffectIfNotSuccessfulAsync(moqed.Object.CancellableEffectPopulatedWithExceptionAsync, token)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
             await fail
-                .SideEffectIfNotSuccessfulAsync(moqed.Object.EffectPopulatedWithExceptionAsync)
+                .EffectIfNotSuccessfulAsync(moqed.Object.EffectPopulatedWithExceptionAsync)
                 .ContinueWith(x => x.Result
                     .Should()
                     .BeSameAs(fail));
