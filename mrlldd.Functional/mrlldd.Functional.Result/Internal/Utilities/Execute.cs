@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace mrlldd.Functional.Result.Internal.Utilities
 {
     internal static class Execute
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Safely(Action effect)
         {
             try
@@ -17,7 +19,8 @@ namespace mrlldd.Functional.Result.Internal.Utilities
                 return e;
             }
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Safely<T>(Action<T> effect, T argument)
         {
             try
@@ -30,8 +33,8 @@ namespace mrlldd.Functional.Result.Internal.Utilities
                 return e;
             }
         }
-
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Safely<T>(Action<T, CancellationToken> effect, T argument, CancellationToken cancellationToken)
         {
             try
@@ -45,6 +48,7 @@ namespace mrlldd.Functional.Result.Internal.Utilities
             }
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<T> Safely<T>(Func<T> factory)
         {
             try
@@ -57,6 +61,7 @@ namespace mrlldd.Functional.Result.Internal.Utilities
             }
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<T> Safely<T>(Func<CancellationToken, T> factory, CancellationToken cancellationToken)
         {
             try
@@ -68,7 +73,8 @@ namespace mrlldd.Functional.Result.Internal.Utilities
                 return e;
             }
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<TMapped> Safely<T, TMapped>(T source, Func<T, CancellationToken, TMapped> mapper,
             CancellationToken cancellationToken)
         {
@@ -82,6 +88,7 @@ namespace mrlldd.Functional.Result.Internal.Utilities
             }
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<TMapped> Safely<T, TMapped>(T source, Func<T, TMapped> mapper)
         {
             try

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using mrlldd.Functional.Result.Exceptions;
@@ -9,28 +10,34 @@ namespace mrlldd.Functional.Result.Extensions
 {
     public static class ValuelessResultExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result AsFail(this Exception exception)
             => new Fail(exception);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Success UnwrapAsSuccess(this Result result)
             => result.Successful
                 ? (Success) result
                 : throw new ResultUnwrapException("Result is not successful.");
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Exception UnwrapAsFail(this Result result)
             => result;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Bind(this Result result, Action effect)
             => result.Successful
                 ? Execute.Safely(effect)
                 : result;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Bind(this Result result, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
             => result.Successful
                 ? Execute.Safely(effect, cancellationToken)
                 : result;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Result result, Func<Task> asyncEffect)
             => result.Successful
                 ? asyncEffect()
@@ -42,7 +49,7 @@ namespace mrlldd.Functional.Result.Extensions
                 : Task
                     .FromResult(result);
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Result result, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
             => result.Successful
@@ -56,6 +63,7 @@ namespace mrlldd.Functional.Result.Extensions
                 : Task
                     .FromResult(result);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<Task> asyncEffect)
             => sourceTask
                 .ContinueWith(task => task.Exception == null
@@ -65,6 +73,7 @@ namespace mrlldd.Functional.Result.Extensions
                     : ResultFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
             => sourceTask
@@ -75,7 +84,7 @@ namespace mrlldd.Functional.Result.Extensions
                     : ResultFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Action effect)
             => sourceTask
                 .ContinueWith(task => task.Exception == null
@@ -84,6 +93,7 @@ namespace mrlldd.Functional.Result.Extensions
                         : task.Result.Bind(effect)
                     : ResultFactory.ValuelessException(task.Exception));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
             => sourceTask
@@ -93,6 +103,7 @@ namespace mrlldd.Functional.Result.Extensions
                         : task.Result.Bind(effect, cancellationToken)
                     : ResultFactory.ValuelessException(task.Exception));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> ThenWrapAsResult(this Task sourceTask)
             => sourceTask
                 .ContinueWith(task => task.Exception ?? (task.IsCanceled
@@ -100,6 +111,7 @@ namespace mrlldd.Functional.Result.Extensions
                     : Result.Success)
                 );
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfSuccessful(this Result result, Action effect)
         {
             if (result.Successful)
@@ -110,6 +122,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfSuccessful(this Result result, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
         {
@@ -121,6 +134,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfSuccessfulAsync(this Result result, Func<Task> effect)
         {
             if (result.Successful)
@@ -131,6 +145,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfSuccessfulAsync(this Result result,
             Func<CancellationToken, Task> effect, CancellationToken cancellationToken)
         {
@@ -142,6 +157,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action effect)
         {
             if (!result.Successful)
@@ -152,6 +168,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
         {
@@ -163,6 +180,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action<Exception> effect)
         {
             if (!result.Successful)
@@ -173,6 +191,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action<Exception, CancellationToken> effect,
             CancellationToken cancellationToken)
         {
@@ -184,6 +203,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result, Func<Task> asyncEffect)
         {
             if (!result.Successful)
@@ -194,6 +214,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
             Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
@@ -205,6 +226,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
             Func<Exception, Task> asyncEffect)
         {
@@ -216,6 +238,7 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
             Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
