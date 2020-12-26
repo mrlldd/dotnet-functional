@@ -29,5 +29,6 @@ namespace mrlldd.Functional.Result.Internal
 
         public static Task<Result<T>> GenericExceptionTask<T>(Exception exception)
             => Task.FromResult<Result<T>>(new Fail<T>(exception));
+
     }
 }

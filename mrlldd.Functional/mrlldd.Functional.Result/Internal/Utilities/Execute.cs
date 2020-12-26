@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace mrlldd.Functional.Result.Internal.Utilities
 {
-    public static class Execute
+    internal static class Execute
     {
         public static Result Safely(Action effect)
         {

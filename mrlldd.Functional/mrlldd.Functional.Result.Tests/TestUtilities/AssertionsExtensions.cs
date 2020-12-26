@@ -5,10 +5,16 @@ namespace mrlldd.Functional.Result.Tests.TestUtilities
 {
     internal static class AssertionsExtensions
     {
-        public static ObjectAssertions BeAResult<T, TResult>(this ObjectAssertions objectAssertions) where TResult : Result<T> 
+        private static ObjectAssertions BeAResult<T, TResult>(ObjectAssertions objectAssertions) where TResult : Result<T> 
             => objectAssertions
                 .SideEffects(x => x.BeOfType<TResult>(),
                     x => x.BeAssignableTo<Result<T>>());
+
+        public static ObjectAssertions BeAFail<T>(this ObjectAssertions objectAssertions)
+            => BeAResult<T, Fail<T>>(objectAssertions);
+
+        public static ObjectAssertions BeASuccess<T>(this ObjectAssertions objectAssertions)
+            => BeAResult<T, Success<T>>(objectAssertions);
         
         public static ObjectAssertions BeAResult<TResult>(this ObjectAssertions objectAssertions) where TResult : Result 
             => objectAssertions

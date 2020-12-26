@@ -23,7 +23,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsSuccess()
                 .SideEffect(x => x
                     .Should()
-                    .BeAResult<int, Success<int>>()).Successful
+                    .BeASuccess<int>()).Successful
                 .Should()
                 .BeTrue();
 
@@ -33,7 +33,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsFail<object>()
                 .SideEffect(x => x
                     .Should()
-                    .BeAResult<object, Fail<object>>()).Successful
+                    .BeAFail<object>()).Successful
                 .Should()
                 .BeFalse();
 
@@ -44,7 +44,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsSuccess()
                 .SideEffect(x => x
                     .Should()
-                    .BeAResult<TestException, Success<TestException>>()).Successful
+                    .BeASuccess<TestException>()).Successful
                 .Should()
                 .BeTrue();
 
@@ -55,7 +55,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsSuccess()
                 .Bind(x => x.ToString())
                 .Should()
-                .BeAResult<string, Success<string>>();
+                .BeASuccess<string>();
 
         [Test]
         public void BindsThrownException()
@@ -64,7 +64,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsSuccess()
                 .Bind(new Func<int, string>(_ => throw new TestException()))
                 .Should()
-                .BeAResult<string, Fail<string>>();
+                .BeAFail<string>();
 
         [Test]
         public void BindsCanceled()
@@ -84,7 +84,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             var result = func();
             result
                 .Should()
-                .BeAResult<string, Fail<string>>();
+                .BeAFail<string>();
             result
                 .As<Fail<string>>().Exception
                 .Should()
@@ -98,7 +98,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .AsSuccess()
                 .Bind(_ => new TestException())
                 .Should()
-                .BeAResult<TestException, Success<TestException>>();
+                .BeASuccess<TestException>();
 
         [Test]
         public Task BindsAsyncSuccess()
@@ -111,7 +111,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 )
                 .ContinueWith(task => task.Result
                     .Should()
-                    .BeAResult<string, Success<string>>()
+                    .BeASuccess<string>()
                 );
 
         [Test]
@@ -125,7 +125,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 )
                 .ContinueWith(task => task.Result
                     .Should()
-                    .BeAResult<string, Fail<string>>()
+                    .BeAFail<string>()
                 );
 
         [Test]
@@ -147,7 +147,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<string, Fail<string>>(),
+                        .BeAFail<string>(),
                     x => x
                         .As<Fail<string>>().Exception
                         .SideEffects(exception => exception
@@ -172,7 +172,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 )
                 .ContinueWith(task => task.Result
                     .Should()
-                    .BeAResult<TestException, Success<TestException>>()
+                    .BeASuccess<TestException>()
                 );
 
         [Test]
@@ -186,7 +186,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 )
                 .ContinueWith(task => task.Result
                     .Should()
-                    .BeAResult<string, Success<string>>());
+                    .BeASuccess<string>());
 
         [Test]
         public Task BindsAsyncFailFromTask()
@@ -198,7 +198,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 )
                 .ContinueWith(task => task.Result
                     .Should()
-                    .BeAResult<string, Fail<string>>());
+                    .BeAFail<string>());
 
         [Test]
         public Task BindsAsyncSuccessFromTaskThatReturnsException()
@@ -211,7 +211,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 )
                 .ContinueWith(task => task.Result
                     .Should()
-                    .BeAResult<TestException, Success<TestException>>());
+                    .BeASuccess<TestException>());
 
         [Test]
         public async Task BindsAsyncFailFromCanceledTask()
@@ -236,7 +236,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<string, Fail<string>>(),
+                        .BeAFail<string>(),
                     x => x
                         .As<Fail<string>>().Exception
                         .SideEffects(exception => exception
@@ -264,7 +264,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                     .ContinueWith(_ => x.ToString(), token), tokenSource.Token);
             result
                 .Should()
-                .BeAResult<string, Success<string>>();
+                .BeASuccess<string>();
         }
 
         [Test]
@@ -281,7 +281,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                     .ContinueWith<string>(_ => throw new TestException(), token), tokenSource.Token);
             result
                 .Should()
-                .BeAResult<string, Fail<string>>();
+                .BeAFail<string>();
         }
 
         [Test]
@@ -298,7 +298,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                     .ContinueWith(_ => new TestException(), token), tokenSource.Token);
             result
                 .Should()
-                .BeAResult<TestException, Success<TestException>>();
+                .BeASuccess<TestException>();
         }
 
         [Test]
@@ -310,7 +310,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .ContinueWith(task => task.Result
                     .SideEffect(x => x
                         .Should()
-                        .BeAResult<string, Fail<string>>()).Successful
+                        .BeAFail<string>()).Successful
                     .Should()
                     .BeFalse());
 
@@ -324,7 +324,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .ContinueWith(task => task.Result
                     .SideEffect(x => x
                         .Should()
-                        .BeAResult<string, Fail<string>>()).Successful
+                        .BeAFail<string>()).Successful
                     .Should()
                     .BeFalse());
 
@@ -345,7 +345,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                 .ContinueWith(task => task.Result
                     .SideEffects(x => x
                             .Should()
-                            .BeAResult<string, Fail<string>>(),
+                            .BeAFail<string>(),
                         x => x.Successful
                             .Should()
                             .BeFalse(),
@@ -379,7 +379,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<int, Success<int>>(),
+                        .BeASuccess<int>(),
                     x => x.As<Success<int>>().Value
                         .Should()
                         .Be(target * multiplier));
@@ -406,7 +406,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<int, Fail<int>>(),
+                        .BeAFail<int>(),
                     x => x.As<Fail<int>>().Exception
                         .Should()
                         .BeOfType<TestException>());
@@ -430,7 +430,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<int, Fail<int>>(),
+                        .BeAFail<int>(),
                     x => x
                         .As<Fail<int>>().Exception
                         .SideEffect(exception => exception
@@ -457,7 +457,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<int, Fail<int>>(),
+                        .BeAFail<int>(),
                     x => x
                         .As<Fail<int>>().Exception
                         .SideEffect(exception => exception
@@ -474,7 +474,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<int, Fail<int>>(),
+                        .BeAFail<int>(),
                     x => x
                         .As<Fail<int>>().Exception
                         .SideEffects(exception => exception
@@ -501,7 +501,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             result
                 .SideEffects(x => x
                         .Should()
-                        .BeAResult<int, Success<int>>(),
+                        .BeASuccess<int>(),
                     x => x
                         .As<Success<int>>().Value
                         .Should()
