@@ -56,15 +56,6 @@ namespace mrlldd.Functional.Result.Extensions
                 : Task
                     .FromResult(result);
 
-        public static Task<Result> Bind(this Task sourceTask, Func<Task> asyncEffect)
-            => sourceTask
-                .ContinueWith(task => task.Exception == null
-                    ? task.IsCanceled
-                        ? ResultFactory.ValuelessCanceledTask(task)
-                        : asyncEffect().ThenWrapAsResult()
-                    : ResultFactory.ValuelessExceptionTask(task.Exception))
-                .Unwrap();
-
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<Task> asyncEffect)
             => sourceTask
                 .ContinueWith(task => task.Exception == null
@@ -90,7 +81,7 @@ namespace mrlldd.Functional.Result.Extensions
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
                         ? ResultFactory.ValuelessCanceled(task)
-                        : Execute.Safely(effect)
+                        : task.Result.Bind(effect)
                     : ResultFactory.ValuelessException(task.Exception));
 
         public static Task<Result> Bind(this Task<Result> sourceTask, Action<CancellationToken> effect,
@@ -99,7 +90,7 @@ namespace mrlldd.Functional.Result.Extensions
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
                         ? ResultFactory.ValuelessCanceled(task)
-                        : Execute.Safely(effect, cancellationToken)
+                        : task.Result.Bind(effect, cancellationToken)
                     : ResultFactory.ValuelessException(task.Exception));
 
         public static Task<Result> ThenWrapAsResult(this Task sourceTask)
