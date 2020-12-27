@@ -43,9 +43,9 @@ namespace mrlldd.Functional.Result.Extensions
                 ? asyncEffect()
                     .ContinueWith(task => task.Exception == null
                         ? task.IsCanceled
-                            ? ResultFactory.ValuelessCanceled(task)
+                            ? FailFactory.ValuelessCanceled(task)
                             : Result.Success
-                        : ResultFactory.ValuelessException(task.Exception))
+                        : FailFactory.ValuelessException(task.Exception))
                 : Task
                     .FromResult(result);
 
@@ -57,9 +57,9 @@ namespace mrlldd.Functional.Result.Extensions
                     // ReSharper disable once MethodSupportsCancellation
                     .ContinueWith(task => task.Exception == null
                         ? task.IsCanceled
-                            ? ResultFactory.ValuelessCanceled(task)
+                            ? FailFactory.ValuelessCanceled(task)
                             : Result.Success
-                        : ResultFactory.ValuelessException(task.Exception))
+                        : FailFactory.ValuelessException(task.Exception))
                 : Task
                     .FromResult(result);
 
@@ -68,9 +68,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? ResultFactory.ValuelessCanceledTask(task)
+                        ? FailFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect)
-                    : ResultFactory.ValuelessExceptionTask(task.Exception))
+                    : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -79,9 +79,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? ResultFactory.ValuelessCanceledTask(task)
+                        ? FailFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect, cancellationToken)
-                    : ResultFactory.ValuelessExceptionTask(task.Exception))
+                    : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -89,9 +89,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? ResultFactory.ValuelessCanceled(task)
+                        ? FailFactory.ValuelessCanceled(task)
                         : task.Result.Bind(effect)
-                    : ResultFactory.ValuelessException(task.Exception));
+                    : FailFactory.ValuelessException(task.Exception));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Action<CancellationToken> effect,
@@ -99,15 +99,15 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? ResultFactory.ValuelessCanceled(task)
+                        ? FailFactory.ValuelessCanceled(task)
                         : task.Result.Bind(effect, cancellationToken)
-                    : ResultFactory.ValuelessException(task.Exception));
+                    : FailFactory.ValuelessException(task.Exception));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> ThenWrapAsResult(this Task sourceTask)
             => sourceTask
                 .ContinueWith(task => task.Exception ?? (task.IsCanceled
-                    ? ResultFactory.ValuelessCanceled(task)
+                    ? FailFactory.ValuelessCanceled(task)
                     : Result.Success)
                 );
 

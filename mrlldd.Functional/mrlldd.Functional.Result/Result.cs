@@ -26,7 +26,9 @@ namespace mrlldd.Functional.Result
     public abstract class Result<T>
     {
         public abstract bool Successful { get; }
-
+        
+        public override string ToString()
+            => $"Success: {Successful}, ";
         public static implicit operator T(Result<T> result)
             => result.Successful
                 ? ((Success<T>) result).Value
@@ -36,9 +38,6 @@ namespace mrlldd.Functional.Result
             => result.Successful
                 ? throw new ResultUnwrapException("Can't extract exception from result as it's successful.")
                 : ((Fail<T>) result).Exception;
-
-        public override string ToString()
-            => $"Success: {Successful}, ";
 
         public static implicit operator Result<T>(Exception exception)
             => new Fail<T>(exception);

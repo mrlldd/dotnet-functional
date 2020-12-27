@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace mrlldd.Functional.Result.Internal
 {
-    internal static class ResultFactory
+    internal static class FailFactory
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result ValuelessException(Exception exception)
