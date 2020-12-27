@@ -10,26 +10,57 @@ namespace mrlldd.Functional.Result.Extensions
 {
     public static class ValuelessResultExtensions
     {
+        /// <summary>
+        /// Wraps an exception to fail result type.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <exception cref="ArgumentNullException">Thrown when exception is null.</exception>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result AsFail(this Exception exception)
             => new Fail(exception);
 
+        /// <summary>
+        /// Unwraps result as success.
+        /// </summary>
+        /// <param name="result">The result that will be unwrapped.</param>
+        /// <exception cref="ResultUnwrapException">Thrown when result is not <see cref="Result.Successful"/></exception>
+        /// <returns>The <see cref="Success"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Success UnwrapAsSuccess(this Result result)
             => result.Successful
                 ? (Success) result
                 : throw new ResultUnwrapException("Result is not successful.");
 
+        /// <summary>
+        /// Unwraps result as fail.
+        /// </summary>
+        /// <param name="result">The result that will be unwrapped.</param>
+        /// <exception cref="ResultUnwrapException">Thrown when result is <see cref="Result.Successful"/></exception>
+        /// <returns>The <see cref="Exception"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Exception UnwrapAsFail(this Result result)
             => result;
 
+        /// <summary>
+        /// Binds a result to another result if it is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result that will be bound.</param>
+        /// <param name="effect">The effect that will be called if source result is <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Bind(this Result result, Action effect)
             => result.Successful
                 ? Execute.Safely(effect)
                 : result;
 
+        /// <summary>
+        /// Binds a result to another result if it is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result that will be bound.</param>
+        /// <param name="effect">The effect that will be called if source result is <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Bind(this Result result, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
@@ -37,6 +68,12 @@ namespace mrlldd.Functional.Result.Extensions
                 ? Execute.Safely(effect, cancellationToken)
                 : result;
 
+        /// <summary>
+        /// Binds a result to another result task if it is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result that will be bound.</param>
+        /// <param name="asyncEffect">The async effect that will be called if source result is <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Result result, Func<Task> asyncEffect)
             => result.Successful
@@ -49,6 +86,13 @@ namespace mrlldd.Functional.Result.Extensions
                 : Task
                     .FromResult(result);
 
+        /// <summary>
+        /// Binds a result to another result task if it is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result that will be bound.</param>
+        /// <param name="asyncEffect">The async effect that will be called if source result is <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Result result, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
@@ -63,6 +107,12 @@ namespace mrlldd.Functional.Result.Extensions
                 : Task
                     .FromResult(result);
 
+        /// <summary>
+        /// Binds a result task to another result task if it will be <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="sourceTask">The result task that will be bound.</param>
+        /// <param name="asyncEffect">The async effect that will be called if source task result is <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<Task> asyncEffect)
             => sourceTask
@@ -73,6 +123,13 @@ namespace mrlldd.Functional.Result.Extensions
                     : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
+        /// <summary>
+        /// Binds a result task to another result task if it will be <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="sourceTask">The result task that will be bound.</param>
+        /// <param name="asyncEffect">The async effect that will be called if source task result is <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Func<CancellationToken, Task> asyncEffect,
             CancellationToken cancellationToken)
@@ -84,6 +141,12 @@ namespace mrlldd.Functional.Result.Extensions
                     : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
+        /// <summary>
+        /// Binds a result task to another result if it will be <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="sourceTask">The result task that will be bound.</param>
+        /// <param name="effect">The effect that will be called if source task result is <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Action effect)
             => sourceTask
@@ -93,6 +156,13 @@ namespace mrlldd.Functional.Result.Extensions
                         : task.Result.Bind(effect)
                     : FailFactory.ValuelessException(task.Exception));
 
+        /// <summary>
+        /// Binds a result task to another result if it will be <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="sourceTask">The result task that will be bound.</param>
+        /// <param name="effect">The effect that will be called if source task result is <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> Bind(this Task<Result> sourceTask, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
@@ -103,6 +173,11 @@ namespace mrlldd.Functional.Result.Extensions
                         : task.Result.Bind(effect, cancellationToken)
                     : FailFactory.ValuelessException(task.Exception));
 
+        /// <summary>
+        /// Wraps a task result to <see cref="Result"/> type. 
+        /// </summary>
+        /// <param name="sourceTask">The result task that will be wrapped.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<Result> ThenWrapAsResult(this Task sourceTask)
             => sourceTask
@@ -111,6 +186,12 @@ namespace mrlldd.Functional.Result.Extensions
                     : Result.Success)
                 );
 
+        /// <summary>
+        /// Performs an effect if result is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="effect">The effect that should be performed if result is <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfSuccessful(this Result result, Action effect)
         {
@@ -122,6 +203,13 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an effect if result is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="effect">The effect that should be performed if result is <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfSuccessful(this Result result, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
@@ -134,29 +222,48 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an async effect if result is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="asyncEffect">The async effect that should be performed if result is <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<Result> EffectIfSuccessfulAsync(this Result result, Func<Task> effect)
+        public static async Task<Result> EffectIfSuccessfulAsync(this Result result, Func<Task> asyncEffect)
         {
             if (result.Successful)
             {
-                await effect();
+                await asyncEffect();
             }
 
             return result;
         }
 
+        /// <summary>
+        /// Performs an async effect if result is <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="asyncEffect">The async effect that should be performed if result is <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfSuccessfulAsync(this Result result,
-            Func<CancellationToken, Task> effect, CancellationToken cancellationToken)
+            Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
         {
             if (result.Successful)
             {
-                await effect(cancellationToken);
+                await asyncEffect(cancellationToken);
             }
 
             return result;
         }
 
+        /// <summary>
+        /// Performs an effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="effect">The effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action effect)
         {
@@ -168,6 +275,13 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="effect">The effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action<CancellationToken> effect,
             CancellationToken cancellationToken)
@@ -180,6 +294,12 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="effect">The effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action<Exception> effect)
         {
@@ -191,6 +311,13 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="effect">The effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result EffectIfNotSuccessful(this Result result, Action<Exception, CancellationToken> effect,
             CancellationToken cancellationToken)
@@ -203,6 +330,12 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an async effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="asyncEffect">The async effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result, Func<Task> asyncEffect)
         {
@@ -214,6 +347,13 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an async effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="asyncEffect">The async effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
             Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
@@ -226,6 +366,12 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an async effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="asyncEffect">The async effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
             Func<Exception, Task> asyncEffect)
@@ -238,6 +384,13 @@ namespace mrlldd.Functional.Result.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Performs an async effect if result is not <see cref="Result.Successful"/>.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="asyncEffect">The async effect that should be performed if result is not <see cref="Result.Successful"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The <see cref="Task{T}"/> that returns <see cref="Result"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static async Task<Result> EffectIfNotSuccessfulAsync(this Result result,
             Func<Exception, CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
