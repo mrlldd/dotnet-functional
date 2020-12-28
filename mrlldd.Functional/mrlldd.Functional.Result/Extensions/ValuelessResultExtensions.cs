@@ -8,6 +8,9 @@ using mrlldd.Functional.Result.Internal.Utilities;
 
 namespace mrlldd.Functional.Result.Extensions
 {
+    /// <summary>
+    /// The class that contains extension methods for <see cref="Result"/>
+    /// </summary>
     public static class ValuelessResultExtensions
     {
         /// <summary>
