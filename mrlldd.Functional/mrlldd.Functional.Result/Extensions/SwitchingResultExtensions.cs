@@ -164,7 +164,7 @@ namespace mrlldd.Functional.Result.Extensions
         private static Result<T> FailResultFactory<T>(Result result)
             => new Fail<T>(((Fail) result).Exception);
 
-        
+
         /// <summary>
         /// Binds a valueless result to another generic result task if it is <see cref="Result.Successful"/>.
         /// </summary>

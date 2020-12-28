@@ -8,7 +8,7 @@ using mrlldd.Functional.Result.Internal.Utilities;
 namespace mrlldd.Functional.Result
 {
     /// <summary>
-    /// The class that represents valueless result.
+    /// The class that represents a valueless result.
     /// </summary>
     public abstract class Result : IHasSuccessState
     {
