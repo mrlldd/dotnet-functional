@@ -13,3 +13,6 @@ mrlldd.Functional/mrlldd.Functional.Tests.Core/obj
 mrlldd.Functional/mrlldd.Functional.Result/bin
 mrlldd.Functional/mrlldd.Functional.sln.DotSettings.user
 mrlldd.Functional/mrlldd.Functional.Result/mrlldd.Functional.Result.xml
+mrlldd.Functional/mrlldd.Functional/mrlldd.Functional.xml
+mrlldd.Functional/mrlldd.Functional.Currying/mrlldd.Functional.Currying.xml
+mrlldd.Functional/mrlldd.Functional.Object/mrlldd.Functional.Object.xml

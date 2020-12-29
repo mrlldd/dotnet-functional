@@ -1,4 +1,4 @@
-﻿namespace mrlldd.Functional.Currying.Abstractions
+﻿namespace Functional.Currying.Abstractions
 {
     public interface ICurryResult
     {

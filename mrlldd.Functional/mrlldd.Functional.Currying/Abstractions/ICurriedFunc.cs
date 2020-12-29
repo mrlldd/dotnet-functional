@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace mrlldd.Functional.Currying.Abstractions
+namespace Functional.Currying.Abstractions
 {
     public interface ICurriedFunc<in T1, out T2>
         : ICurrying<IFullyCurried<Func<T2>>, T1>,

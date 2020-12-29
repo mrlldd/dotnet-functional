@@ -1,14 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard1.0</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <RootNamespace>Functional</RootNamespace>
+        <PackageVersion>0.1.0</PackageVersion>
+        <AssemblyName>mrlldd.Functional</AssemblyName>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\mrlldd.Functional.Currying\mrlldd.Functional.Currying.csproj" />
       <ProjectReference Include="..\mrlldd.Functional.Object\mrlldd.Functional.Object.csproj" />
+      <ProjectReference Include="..\mrlldd.Functional.Result\mrlldd.Functional.Result.csproj" />
     </ItemGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DocumentationFile>mrlldd.Functional.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>mrlldd.Functional.xml</DocumentationFile>
+    </PropertyGroup>
 </Project>

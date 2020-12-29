@@ -1,11 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard1.3</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <RootNamespace>Functional.Result</RootNamespace>
+        <PackageVersion>0.1.0</PackageVersion>
+        <AssemblyName>mrlldd.Functional.Result</AssemblyName>
+    </PropertyGroup>
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DocumentationFile>mrlldd.Functional.Result.xml</DocumentationFile>
     </PropertyGroup>
