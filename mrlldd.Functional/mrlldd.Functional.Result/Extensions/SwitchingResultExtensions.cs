@@ -23,7 +23,7 @@ namespace mrlldd.Functional.Result.Extensions
         public static Result Bind<T>(this Result<T> result, Action effect)
             => result.Successful
                 ? Execute.Safely(effect)
-                : FailFactory(result);
+                : SwitchingFailFactory(result);
 
         /// <summary>
         /// Binds a generic result to another valueless result if it is <see cref="Result{T}.Successful"/>.
@@ -38,7 +38,7 @@ namespace mrlldd.Functional.Result.Extensions
             CancellationToken cancellationToken)
             => result.Successful
                 ? Execute.Safely(effect, cancellationToken)
-                : FailFactory(result);
+                : SwitchingFailFactory(result);
 
         /// <summary>
         /// Binds a generic result to another valueless result if it is <see cref="Result{T}.Successful"/>.
@@ -51,7 +51,7 @@ namespace mrlldd.Functional.Result.Extensions
         public static Result Bind<T>(this Result<T> result, Action<T> effect)
             => result.Successful
                 ? Execute.Safely(effect, ((Success<T>) result).Value)
-                : FailFactory(result);
+                : SwitchingFailFactory(result);
 
         /// <summary>
         /// Binds a generic result to another valueless result if it is <see cref="Result{T}.Successful"/>.
@@ -66,10 +66,10 @@ namespace mrlldd.Functional.Result.Extensions
             CancellationToken cancellationToken)
             => result.Successful
                 ? Execute.Safely(effect, ((Success<T>) result).Value, cancellationToken)
-                : FailFactory(result);
+                : SwitchingFailFactory(result);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Result FailFactory<T>(Result<T> result)
+        private static Result SwitchingFailFactory<T>(Result<T> result)
             => new Fail(((Fail<T>) result).Exception);
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace mrlldd.Functional.Result.Extensions
             => result.Successful
                 ? asyncEffect()
                     .ThenWrapAsResult()
-                : Internal.FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
+                : FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
 
         /// <summary>
         /// Binds a generic result to another valueless result task if it is <see cref="Result{T}.Successful"/>.
@@ -100,7 +100,7 @@ namespace mrlldd.Functional.Result.Extensions
             => result.Successful
                 ? asyncEffect(cancellationToken)
                     .ThenWrapAsResult()
-                : Internal.FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
+                : FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
 
         /// <summary>
         /// Binds a generic result to another valueless result task if it is <see cref="Result{T}.Successful"/>.
@@ -114,7 +114,7 @@ namespace mrlldd.Functional.Result.Extensions
             => result.Successful
                 ? asyncEffect(((Success<T>) result).Value)
                     .ThenWrapAsResult()
-                : Internal.FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
+                : FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
 
         /// <summary>
         /// Binds a generic result to another valueless result task if it is <see cref="Result{T}.Successful"/>.
@@ -130,7 +130,7 @@ namespace mrlldd.Functional.Result.Extensions
             => result.Successful
                 ? asyncEffect(((Success<T>) result).Value, cancellationToken)
                     .ThenWrapAsResult()
-                : Internal.FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
+                : FailFactory.ValuelessExceptionTask(((Fail<T>) result).Exception);
 
         /// <summary>
         /// Binds a valueless result to another generic result if it is <see cref="Result.Successful"/>.
@@ -143,7 +143,7 @@ namespace mrlldd.Functional.Result.Extensions
         public static Result<T> Bind<T>(this Result result, Func<T> factory)
             => result.Successful
                 ? Execute.Safely(factory)
-                : FailResultFactory<T>(result);
+                : SwitchingFailFactory<T>(result);
 
         /// <summary>
         /// Binds a valueless result to another generic result if it is <see cref="Result.Successful"/>.
@@ -158,10 +158,10 @@ namespace mrlldd.Functional.Result.Extensions
             CancellationToken cancellationToken)
             => result.Successful
                 ? Execute.Safely(factory, cancellationToken)
-                : FailResultFactory<T>(result);
+                : SwitchingFailFactory<T>(result);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Result<T> FailResultFactory<T>(Result result)
+        private static Result<T> SwitchingFailFactory<T>(Result result)
             => new Fail<T>(((Fail) result).Exception);
 
 
@@ -199,9 +199,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.GenericCanceled<T>(task)
+                        ? FailFactory.GenericCanceled<T>(task)
                         : new Success<T>(task.Result)
-                    : Internal.FailFactory.GenericException<T>(task.Exception));
+                    : FailFactory.GenericException<T>(task.Exception));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task<Result<T>> FailResultTaskFactory<T>(Result result)
@@ -219,9 +219,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceledTask(task)
+                        ? FailFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect)
-                    : Internal.FailFactory.ValuelessExceptionTask(task.Exception))
+                    : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         /// <summary>
@@ -238,9 +238,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceledTask(task)
+                        ? FailFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect, cancellationToken)
-                    : Internal.FailFactory.ValuelessExceptionTask(task.Exception))
+                    : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         /// <summary>
@@ -255,9 +255,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceledTask(task)
+                        ? FailFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect)
-                    : Internal.FailFactory.ValuelessExceptionTask(task.Exception))
+                    : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         /// <summary>
@@ -274,9 +274,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceledTask(task)
+                        ? FailFactory.ValuelessCanceledTask(task)
                         : task.Result.Bind(asyncEffect, cancellationToken)
-                    : Internal.FailFactory.ValuelessExceptionTask(task.Exception))
+                    : FailFactory.ValuelessExceptionTask(task.Exception))
                 .Unwrap();
 
         /// <summary>
@@ -291,10 +291,10 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.GenericCanceledTask<T>(task)
+                        ? FailFactory.GenericCanceledTask<T>(task)
                         : task.Result
                             .Bind(asyncFactory)
-                    : Internal.FailFactory.GenericExceptionTask<T>(task.Exception))
+                    : FailFactory.GenericExceptionTask<T>(task.Exception))
                 .Unwrap();
 
         /// <summary>
@@ -311,9 +311,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.GenericCanceledTask<T>(task)
+                        ? FailFactory.GenericCanceledTask<T>(task)
                         : task.Result.Bind(asyncFactory, cancellationToken)
-                    : Internal.FailFactory.GenericExceptionTask<T>(task.Exception))
+                    : FailFactory.GenericExceptionTask<T>(task.Exception))
                 .Unwrap();
 
         /// <summary>
@@ -329,9 +329,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceled(task)
+                        ? FailFactory.ValuelessCanceled(task)
                         : task.Result.Bind(effect)
-                    : Internal.FailFactory.ValuelessException(task.Exception)
+                    : FailFactory.ValuelessException(task.Exception)
                 );
 
         /// <summary>
@@ -348,9 +348,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceled(task)
+                        ? FailFactory.ValuelessCanceled(task)
                         : task.Result.Bind(effect, cancellationToken)
-                    : Internal.FailFactory.ValuelessException(task.Exception)
+                    : FailFactory.ValuelessException(task.Exception)
                 );
 
         /// <summary>
@@ -366,9 +366,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceled(task)
+                        ? FailFactory.ValuelessCanceled(task)
                         : task.Result.Bind(effect)
-                    : Internal.FailFactory.ValuelessException(task.Exception)
+                    : FailFactory.ValuelessException(task.Exception)
                 );
 
         /// <summary>
@@ -385,9 +385,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.ValuelessCanceled(task)
+                        ? FailFactory.ValuelessCanceled(task)
                         : task.Result.Bind(effect, cancellationToken)
-                    : Internal.FailFactory.ValuelessException(task.Exception)
+                    : FailFactory.ValuelessException(task.Exception)
                 );
 
         /// <summary>
@@ -402,9 +402,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.GenericCanceled<T>(task)
+                        ? FailFactory.GenericCanceled<T>(task)
                         : task.Result.Bind(factory)
-                    : Internal.FailFactory.GenericException<T>(task.Exception)
+                    : FailFactory.GenericException<T>(task.Exception)
                 );
 
         /// <summary>
@@ -421,9 +421,9 @@ namespace mrlldd.Functional.Result.Extensions
             => sourceTask
                 .ContinueWith(task => task.Exception == null
                     ? task.IsCanceled
-                        ? Internal.FailFactory.GenericCanceled<T>(task)
+                        ? FailFactory.GenericCanceled<T>(task)
                         : task.Result.Bind(factory, cancellationToken)
-                    : Internal.FailFactory.GenericException<T>(task.Exception)
+                    : FailFactory.GenericException<T>(task.Exception)
                 );
     }
 }
