@@ -11,7 +11,7 @@ namespace mrlldd.Functional.Object.Extensions
         public static TResult? MapIfPresent<T, TResult>(this T obj, Func<T, TResult> mapper)
             => obj == null ? default : mapper(obj);
         
-        public static T SideEffect<T>(this T obj, Action<T> effect)
+        public static T Effect<T>(this T obj, Action<T> effect)
         {
             effect(obj);
             return obj;

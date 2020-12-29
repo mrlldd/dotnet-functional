@@ -5,3 +5,11 @@ mrlldd.Functional/mrlldd.Functional/bin
 mrlldd.Functional/mrlldd.Functional.Currying/bin
 mrlldd.Functional/mrlldd.Functional.Object/bin
 mrlldd.Functional/mrlldd.Functional.Object/obj
+mrlldd.Functional/mrlldd.Functional.Result/obj
+mrlldd.Functional/mrlldd.Functional.Result.Tests/bin
+mrlldd.Functional/mrlldd.Functional.Result.Tests/obj
+mrlldd.Functional/mrlldd.Functional.Tests.Core/bin
+mrlldd.Functional/mrlldd.Functional.Tests.Core/obj
+mrlldd.Functional/mrlldd.Functional.Result/bin
+mrlldd.Functional/mrlldd.Functional.sln.DotSettings.user
+mrlldd.Functional/mrlldd.Functional.Result/mrlldd.Functional.Result.xml
