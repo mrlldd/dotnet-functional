@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
-using mrlldd.Functional.Result.Extensions;
-using mrlldd.Functional.Tests.Core;
-using mrlldd.Functional.Tests.Core.Internal.Extensions;
+using Functional.Result.Extensions;
+using Functional.Tests.Core;
+using Functional.Tests.Core.Internal.Extensions;
 using NUnit.Framework;
 
-namespace mrlldd.Functional.Result.Tests
+namespace Functional.Result.Tests
 {
     public class GenericSuccessTests : TestFixtureBase
     {
@@ -12,8 +12,7 @@ namespace mrlldd.Functional.Result.Tests
         public void AlwaysSuccessful() 
             => Faker.Random.Number()
                 .AsSuccess()
-                .SideEffects(x => x.Successful
-                    .Should()
+                .SideEffects(x => x.Successful.Should()
                     .BeTrue());
 
         [Test]

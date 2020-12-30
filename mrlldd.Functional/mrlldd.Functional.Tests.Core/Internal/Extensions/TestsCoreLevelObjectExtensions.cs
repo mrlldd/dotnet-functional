@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace mrlldd.Functional.Tests.Core.Internal.Extensions
+namespace Functional.Tests.Core.Internal.Extensions
 {
     internal static class TestsCoreLevelObjectExtensions
     {

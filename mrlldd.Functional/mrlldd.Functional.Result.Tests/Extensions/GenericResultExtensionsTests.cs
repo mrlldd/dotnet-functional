@@ -2,17 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Primitives;
+using Functional.Result.Extensions;
+using Functional.Result.Tests.TestUtilities;
+using Functional.Tests.Core;
+using Functional.Tests.Core.Exceptions;
+using Functional.Tests.Core.Extensions;
+using Functional.Tests.Core.Internal.Extensions;
 using Moq;
-using mrlldd.Functional.Result.Extensions;
-using mrlldd.Functional.Result.Tests.TestUtilities;
-using mrlldd.Functional.Tests.Core;
-using mrlldd.Functional.Tests.Core.Exceptions;
-using mrlldd.Functional.Tests.Core.Extensions;
-using mrlldd.Functional.Tests.Core.Internal.Extensions;
 using NUnit.Framework;
 
-namespace mrlldd.Functional.Result.Tests.Extensions
+namespace Functional.Result.Tests.Extensions
 {
     public class GenericResultExtensionsTests : TestFixtureBase
     {
@@ -21,8 +20,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
             => Faker.Random
                 .Number()
                 .AsSuccess()
-                .SideEffect(x => x
-                    .Should()
+                .SideEffect(x => x.Should()
                     .BeASuccess<int>()).Successful
                 .Should()
                 .BeTrue();

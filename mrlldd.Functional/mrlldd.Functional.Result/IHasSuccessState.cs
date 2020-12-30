@@ -1,4 +1,4 @@
-﻿namespace mrlldd.Functional.Result
+﻿namespace Functional.Result
 {
     /// <summary>
     /// The interface that represents the entity that has a success state.

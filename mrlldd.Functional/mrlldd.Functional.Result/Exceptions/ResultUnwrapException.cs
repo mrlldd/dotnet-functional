@@ -1,4 +1,4 @@
-﻿namespace mrlldd.Functional.Result.Exceptions
+﻿namespace Functional.Result.Exceptions
 {
     /// <summary>
     /// The exception that represent an error during unwrapping of <see cref="Result"/> and <see cref="Result{T}"/> instances.

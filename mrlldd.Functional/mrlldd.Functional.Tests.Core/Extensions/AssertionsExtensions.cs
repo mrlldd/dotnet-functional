@@ -2,7 +2,7 @@
 using FluentAssertions;
 using FluentAssertions.Primitives;
 
-namespace mrlldd.Functional.Tests.Core.Extensions
+namespace Functional.Tests.Core.Extensions
 {
     public static class AssertionsExtensions
     {

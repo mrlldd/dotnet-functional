@@ -1,13 +1,13 @@
 ﻿using System;
 using FluentAssertions;
-using mrlldd.Functional.Result.Exceptions;
-using mrlldd.Functional.Result.Extensions;
-using mrlldd.Functional.Tests.Core;
-using mrlldd.Functional.Tests.Core.Exceptions;
-using mrlldd.Functional.Tests.Core.Internal.Extensions;
+using Functional.Result.Exceptions;
+using Functional.Result.Extensions;
+using Functional.Tests.Core;
+using Functional.Tests.Core.Exceptions;
+using Functional.Tests.Core.Internal.Extensions;
 using NUnit.Framework;
 
-namespace mrlldd.Functional.Result.Tests
+namespace Functional.Result.Tests
 {
     public class GenericResultTests : TestFixtureBase
     {
@@ -19,11 +19,9 @@ namespace mrlldd.Functional.Result.Tests
                     .SideEffects(x => x
                             .Should()
                             .NotThrow<ResultUnwrapException>(),
-                        f => target
-                            .Should()
-                            .Be(f().UnwrapAsSuccess()),
-                        f => f()
-                            .UnwrapAsSuccess()
+                        f => target.Should()
+                            .Be(GenericResultExtensions.UnwrapAsSuccess<int>(f())),
+                        f => GenericResultExtensions.UnwrapAsSuccess<int>(f())
                             .Should()
                             .Be(target)
                     ));

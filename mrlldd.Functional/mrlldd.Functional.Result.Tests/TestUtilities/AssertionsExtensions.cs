@@ -1,7 +1,7 @@
 ﻿using FluentAssertions.Primitives;
-using mrlldd.Functional.Tests.Core.Internal.Extensions;
+using Functional.Tests.Core.Internal.Extensions;
 
-namespace mrlldd.Functional.Result.Tests.TestUtilities
+namespace Functional.Result.Tests.TestUtilities
 {
     internal static class AssertionsExtensions
     {

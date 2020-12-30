@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <TargetFramework>netstandard2.0</TargetFramework>
         <IsPackable>false</IsPackable>
+        <RootNamespace>Functional.Tests.Core</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

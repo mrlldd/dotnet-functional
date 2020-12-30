@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace mrlldd.Functional.Result.Exceptions
+namespace Functional.Result.Exceptions
 {
     /// <summary>
     /// The exception that represents an error during interaction with <see cref="Result"/> instances.
