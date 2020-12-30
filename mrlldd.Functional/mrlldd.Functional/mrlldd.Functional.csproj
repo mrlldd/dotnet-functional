@@ -7,6 +7,8 @@
     </PropertyGroup>
     
     <PropertyGroup>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageId>mrlldd.Functional</PackageId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,6 +16,12 @@
         <RootNamespace>Functional</RootNamespace>
         <PackageVersion>0.1.0</PackageVersion>
         <AssemblyName>mrlldd.Functional</AssemblyName>
+        <Description>
+            Provides a set of functional extensions and various functional types.
+        </Description>
+        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
+        <Authors>mrlldd</Authors>
+        <Title>mrlldd.Functional</Title>
     </PropertyGroup>
     
     <ItemGroup>

@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageId>mrlldd.Functional.Currying</PackageId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,6 +16,12 @@
         <RootNamespace>Functional.Currying</RootNamespace>
         <PackageVersion>0.1.0</PackageVersion>
         <AssemblyName>mrlldd.Functional.Currying</AssemblyName>
+        <Description>
+            Provides the generic types to curry delegates.
+        </Description>
+        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
+        <Authors>mrlldd</Authors>
+        <Title>mrlldd.Functional.Currying</Title>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

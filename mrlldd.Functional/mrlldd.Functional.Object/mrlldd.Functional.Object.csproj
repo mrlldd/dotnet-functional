@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageId>mrlldd.Functional.Object</PackageId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,6 +16,12 @@
         <RootNamespace>Functional.Object</RootNamespace>
         <PackageVersion>0.1.0</PackageVersion>
         <AssemblyName>mrlldd.Functional.Object</AssemblyName>
+        <Description>
+            Provides a set of extensions for any objects.
+        </Description>
+        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
+        <Authors>mrlldd</Authors>
+        <Title>mrlldd.Functional.Object</Title>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
