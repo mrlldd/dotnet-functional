@@ -10,6 +10,7 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageId>mrlldd.Functional</PackageId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageTags>mrlldd;functional;result;object;currying;utilities;extensions</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -19,9 +20,12 @@
         <Description>
             Provides a set of functional extensions and various functional types.
         </Description>
-        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
+        <PackageIconUrl>https://github.com/mrlldd/dotnet-functional/blob/main/icon.png?raw=true</PackageIconUrl>
         <Authors>mrlldd</Authors>
         <Title>mrlldd.Functional</Title>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/mrlldd/dotnet-functional.git</RepositoryUrl>
+        <RepositoryBranch>main</RepositoryBranch>
     </PropertyGroup>
     
     <ItemGroup>
@@ -31,10 +35,6 @@
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DocumentationFile>mrlldd.Functional.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>mrlldd.Functional.xml</DocumentationFile>
     </PropertyGroup>
 </Project>

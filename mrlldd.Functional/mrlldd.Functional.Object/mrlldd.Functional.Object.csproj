@@ -9,6 +9,7 @@
     <PropertyGroup>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageId>mrlldd.Functional.Object</PackageId>
+        <PackageTags>mrlldd;functional;object;utilities;extensions</PackageTags>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -19,16 +20,15 @@
         <Description>
             Provides a set of extensions for any objects.
         </Description>
-        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
+        <PackageIconUrl>https://github.com/mrlldd/dotnet-functional/blob/main/icon.png?raw=true</PackageIconUrl>
         <Authors>mrlldd</Authors>
         <Title>mrlldd.Functional.Object</Title>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/mrlldd/dotnet-functional.git</RepositoryUrl>
+        <RepositoryBranch>main</RepositoryBranch>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DocumentationFile>mrlldd.Functional.Object.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>mrlldd.Functional.Object.xml</DocumentationFile>
     </PropertyGroup>
 </Project>

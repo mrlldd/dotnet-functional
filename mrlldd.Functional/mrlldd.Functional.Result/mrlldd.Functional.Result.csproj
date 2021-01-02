@@ -7,28 +7,28 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageIconUrl>https://github.com/mrlldd/dotnet-functional/blob/main/icon.png?raw=true</PackageIconUrl>
         <PackageId>mrlldd.Functional.Result</PackageId>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageTags>mrlldd;functional;result;utilities;extensions</PackageTags>
+        <PackageVersion>0.1.0</PackageVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Result</RootNamespace>
-        <PackageVersion>0.1.0</PackageVersion>
         <AssemblyName>mrlldd.Functional.Result</AssemblyName>
-        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
         <Description>
             Provides the result functional abstraction with a set of extensions.
         </Description>
         <Authors>mrlldd</Authors>
         <Title>mrlldd.Functional.Object</Title>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/mrlldd/dotnet-functional.git</RepositoryUrl>
+        <RepositoryBranch>main</RepositoryBranch>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DocumentationFile>mrlldd.Functional.Result.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>mrlldd.Functional.Result.xml</DocumentationFile>
     </PropertyGroup>
 </Project>
