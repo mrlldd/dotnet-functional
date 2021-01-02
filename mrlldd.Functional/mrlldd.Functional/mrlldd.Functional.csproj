@@ -10,6 +10,7 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageId>mrlldd.Functional</PackageId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>mrlldd;functional;result;object;currying;utilities;extensions</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
