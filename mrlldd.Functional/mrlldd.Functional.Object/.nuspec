@@ -1,0 +1,15 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
+        <id>mrlldd.Functional.Object</id>
+        <version>0.1.0</version>
+        <title>mrlldd.Functional.Object</title>
+        <authors>mrlldd</authors>
+        <license type="expression">MIT</license>
+        <icon>../icon.png</icon>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Provides a set of extensions for any objects.</description>
+        <repository type="git" url="https://github.com/mrlldd/dotnet-functional.git" branch="main"/>
+        <tags>mrlldd functional object utilities extensions</tags>
+    </metadata>
+</package>

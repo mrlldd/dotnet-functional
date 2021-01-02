@@ -7,21 +7,12 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <PackageId>mrlldd.Functional.Result</PackageId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Result</RootNamespace>
-        <PackageVersion>0.1.0</PackageVersion>
         <AssemblyName>mrlldd.Functional.Result</AssemblyName>
-        <PackageIconUrl>http://www.pngall.com/wp-content/uploads/4/Function-PNG.png</PackageIconUrl>
-        <Description>
-            Provides the result functional abstraction with a set of extensions.
-        </Description>
-        <Authors>mrlldd</Authors>
-        <Title>mrlldd.Functional.Object</Title>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
