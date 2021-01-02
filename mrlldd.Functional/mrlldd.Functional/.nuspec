@@ -1,14 +1,21 @@
-<?xml version="1.0" ?><package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+<?xml version="1.0" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
     <metadata>
         <id>mrlldd.Functional</id>
         <version>0.1.1</version>
         <title>mrlldd.Functional</title>
         <authors>mrlldd</authors>
         <license type="expression">MIT</license>
-        <icon>../icon.png</icon>
+        <iconUrl>https://github.com/mrlldd/dotnet-functional/blob/main/icon.png?raw=true</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Provides a set of functional extensions and various functional types.</description>
         <repository type="git" url="https://github.com/mrlldd/dotnet-functional.git" branch="main"/>
         <tags>mrlldd functional result object currying utilities extensions</tags>
+        <contentFiles>
+            <files include="*\*.*"/>
+        </contentFiles>
     </metadata>
+    <files>
+        <file src="bin\Release\netstandard2.0\*.dll" target="lib"/>
+    </files>
 </package>

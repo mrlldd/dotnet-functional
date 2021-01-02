@@ -13,6 +13,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Object</RootNamespace>
         <AssemblyName>mrlldd.Functional.Object</AssemblyName>
+        <NuspecFile>.nuspec</NuspecFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

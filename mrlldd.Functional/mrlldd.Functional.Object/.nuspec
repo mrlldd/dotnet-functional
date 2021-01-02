@@ -5,10 +5,16 @@
         <title>mrlldd.Functional.Object</title>
         <authors>mrlldd</authors>
         <license type="expression">MIT</license>
-        <icon>../icon.png</icon>
+        <iconUrl>https://github.com/mrlldd/dotnet-functional/blob/main/icon.png?raw=true</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Provides a set of extensions for any objects.</description>
         <repository type="git" url="https://github.com/mrlldd/dotnet-functional.git" branch="main"/>
         <tags>mrlldd functional object utilities extensions</tags>
+        <contentFiles>
+            <files include="*\*.*"/>
+        </contentFiles>
     </metadata>
+    <files>
+        <file src="bin\Release\netstandard2.0\*.dll" target="lib"/>
+    </files>
 </package>

@@ -13,13 +13,10 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Result</RootNamespace>
         <AssemblyName>mrlldd.Functional.Result</AssemblyName>
+        <NuspecFile>.nuspec</NuspecFile>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DocumentationFile>mrlldd.Functional.Result.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>mrlldd.Functional.Result.xml</DocumentationFile>
     </PropertyGroup>
 </Project>

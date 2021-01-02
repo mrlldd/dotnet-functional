@@ -13,6 +13,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Currying</RootNamespace>
         <AssemblyName>mrlldd.Functional.Currying</AssemblyName>
+        <NuspecFile>.nuspec</NuspecFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
