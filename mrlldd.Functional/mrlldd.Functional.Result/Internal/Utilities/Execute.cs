@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace mrlldd.Functional.Result.Internal.Utilities
+namespace Functional.Result.Internal.Utilities
 {
     internal static class Execute
     {

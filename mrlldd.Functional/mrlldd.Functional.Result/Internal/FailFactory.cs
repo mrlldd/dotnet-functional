@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace mrlldd.Functional.Result.Internal
+namespace Functional.Result.Internal
 {
     internal static class FailFactory
     {

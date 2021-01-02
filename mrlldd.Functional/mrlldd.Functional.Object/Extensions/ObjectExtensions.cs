@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace mrlldd.Functional.Object.Extensions
+namespace Functional.Object.Extensions
 {
     public static class ObjectExtensions
     {

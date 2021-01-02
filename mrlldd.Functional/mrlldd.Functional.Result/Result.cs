@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using mrlldd.Functional.Result.Exceptions;
-using mrlldd.Functional.Result.Extensions;
-using mrlldd.Functional.Result.Internal.Utilities;
+using Functional.Result.Exceptions;
+using Functional.Result.Extensions;
+using Functional.Result.Internal.Utilities;
 
-namespace mrlldd.Functional.Result
+namespace Functional.Result
 {
     /// <summary>
     /// The class that represents a valueless result.
@@ -26,8 +26,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the effect and returns
-        /// <see cref="mrlldd.Functional.Result.Success"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail"/> if exception was thrown.
+        /// <see cref="Functional.Result.Success"/> if no exception was thrown or
+        /// <see cref="Fail"/> if exception was thrown.
         /// </summary>
         /// <param name="effect">The effect that will be executed.</param>
         /// <returns>The <see cref="Result"/>.</returns>
@@ -36,8 +36,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the effect and returns
-        /// <see cref="mrlldd.Functional.Result.Success"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail"/> if exception was thrown.
+        /// <see cref="Functional.Result.Success"/> if no exception was thrown or
+        /// <see cref="Fail"/> if exception was thrown.
         /// </summary>
         /// <param name="effect">The effect that will be executed.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -47,8 +47,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the async effect and returns
-        /// <see cref="mrlldd.Functional.Result.Success"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail"/> if exception was thrown.
+        /// <see cref="Functional.Result.Success"/> if no exception was thrown or
+        /// <see cref="Fail"/> if exception was thrown.
         /// </summary>
         /// <param name="asyncEffect">The async effect that will be executed.</param>
         /// <returns>The <see cref="Task{TResult}"/> that returns <see cref="Result"/>.</returns>
@@ -57,8 +57,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         ///  Executes the async effect and returns
-        /// <see cref="mrlldd.Functional.Result.Success"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail"/> if exception was thrown.
+        /// <see cref="Functional.Result.Success"/> if no exception was thrown or
+        /// <see cref="Fail"/> if exception was thrown.
         /// </summary>
         /// <param name="asyncEffect">The async effect that will be executed.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -68,8 +68,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the factory and returns
-        /// <see cref="mrlldd.Functional.Result.Success{T}"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail{T}"/> if exception was thrown.
+        /// <see cref="Success{T}"/> if no exception was thrown or
+        /// <see cref="Fail{T}"/> if exception was thrown.
         /// </summary>
         /// <param name="factory">The factory that will be executed.</param>
         /// <typeparam name="T">The type of value that factory returns.</typeparam>
@@ -79,8 +79,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the factory and returns
-        /// <see cref="mrlldd.Functional.Result.Success{T}"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail{T}"/> if exception was thrown.
+        /// <see cref="Success{T}"/> if no exception was thrown or
+        /// <see cref="Fail{T}"/> if exception was thrown.
         /// </summary>
         /// <param name="factory">The factory that will be executed.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -91,8 +91,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the async factory and returns
-        /// <see cref="mrlldd.Functional.Result.Success{T}"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail{T}"/> if exception was thrown.
+        /// <see cref="Success{T}"/> if no exception was thrown or
+        /// <see cref="Fail{T}"/> if exception was thrown.
         /// </summary>
         /// <param name="asyncFactory">The async factory that will be executed.</param>
         /// <typeparam name="T">The type of value that async factory returns.</typeparam>
@@ -102,8 +102,8 @@ namespace mrlldd.Functional.Result
 
         /// <summary>
         /// Executes the async factory and returns
-        /// <see cref="mrlldd.Functional.Result.Success{T}"/> if no exception was thrown or
-        /// <see cref="mrlldd.Functional.Result.Fail{T}"/> if exception was thrown.
+        /// <see cref="Success{T}"/> if no exception was thrown or
+        /// <see cref="Fail{T}"/> if exception was thrown.
         /// </summary>
         /// <param name="asyncFactory">The async factory that will be executed.</param>
         /// <param name="cancellationToken">The cancellation token.</param>

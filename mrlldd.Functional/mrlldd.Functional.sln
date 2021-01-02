@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mrlldd.Functional.Result.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mrlldd.Functional.Tests.Core", "mrlldd.Functional.Tests.Core\mrlldd.Functional.Tests.Core.csproj", "{632801AF-A575-4857-B8B2-6B3564A9CFC1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{09E20936-5966-4BCA-A4C8-168A28C0AB97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Result", "Result", "{D52F205D-EE24-4C88-86D6-9D44910BEA63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +46,10 @@ Global
 		{632801AF-A575-4857-B8B2-6B3564A9CFC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{632801AF-A575-4857-B8B2-6B3564A9CFC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{632801AF-A575-4857-B8B2-6B3564A9CFC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{632801AF-A575-4857-B8B2-6B3564A9CFC1} = {09E20936-5966-4BCA-A4C8-168A28C0AB97}
+		{D52F205D-EE24-4C88-86D6-9D44910BEA63} = {09E20936-5966-4BCA-A4C8-168A28C0AB97}
+		{16CB8112-9DFF-43A2-BD6A-3953564448D4} = {D52F205D-EE24-4C88-86D6-9D44910BEA63}
 	EndGlobalSection
 EndGlobal

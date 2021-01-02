@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace mrlldd.Functional.Result
+namespace Functional.Result
 {
     /// <summary>
     /// The class that represents a valueless fail.

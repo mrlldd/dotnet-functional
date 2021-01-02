@@ -1,7 +1,7 @@
 ﻿using System;
-using mrlldd.Functional.Currying.Abstractions;
+using Functional.Currying.Abstractions;
 
-namespace mrlldd.Functional.Currying.Internal.Curried.Actions
+namespace Functional.Currying.Internal.Curried.Actions
 {
     internal class CurriedAction<T1, T2, T3, T4, T5, T6> : Curried<Action<T1, T2, T3, T4, T5, T6>>,
         ICurriedAction<T1, T2, T3, T4, T5, T6>

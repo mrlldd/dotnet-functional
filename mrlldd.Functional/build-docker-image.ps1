@@ -1,0 +1,1 @@
+docker build . -t mrlldd/functional --progress=plain --no-cache | tee docker-build.log

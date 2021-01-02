@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace mrlldd.Functional.Currying.Internal.Curried
+namespace Functional.Currying.Internal.Curried
 {
     internal abstract class Curried<TSourceDelegate> where TSourceDelegate : Delegate
     {

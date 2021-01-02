@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using mrlldd.Functional.Result.Exceptions;
-using mrlldd.Functional.Result.Internal;
-using mrlldd.Functional.Result.Internal.Utilities;
+using Functional.Result.Exceptions;
+using Functional.Result.Internal;
+using Functional.Result.Internal.Utilities;
 
-namespace mrlldd.Functional.Result.Extensions
+namespace Functional.Result.Extensions
 {
     /// <summary>
     /// The class that contains extension methods for <see cref="Result{T}"/>

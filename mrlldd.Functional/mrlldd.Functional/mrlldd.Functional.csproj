@@ -1,14 +1,50 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard1.0</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
+    <PropertyGroup>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageId>mrlldd.Functional</PackageId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/mrlldd/dotnet-functional</PackageProjectUrl>
+        <PackageTags>mrlldd;functional;result;object;currying;utilities;extensions</PackageTags>
+        <IncludeSymbols>true</IncludeSymbols>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <RootNamespace>Functional</RootNamespace>
+        <PackageVersion>0.1.3</PackageVersion>
+        <AssemblyName>mrlldd.Functional</AssemblyName>
+        <Description>
+            Provides a set of functional extensions and various functional types.
+        </Description>
+        <PackageIconUrl>https://github.com/mrlldd/dotnet-functional/blob/main/icon.png?raw=true</PackageIconUrl>
+        <Authors>mrlldd</Authors>
+        <Title>mrlldd.Functional</Title>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/mrlldd/dotnet-functional.git</RepositoryUrl>
+        <RepositoryBranch>main</RepositoryBranch>
+    </PropertyGroup>
+    
     <ItemGroup>
-      <ProjectReference Include="..\mrlldd.Functional.Currying\mrlldd.Functional.Currying.csproj" />
-      <ProjectReference Include="..\mrlldd.Functional.Object\mrlldd.Functional.Object.csproj" />
+      <ProjectReference Include="..\mrlldd.Functional.Currying\mrlldd.Functional.Currying.csproj"/>
+      <ProjectReference Include="..\mrlldd.Functional.Object\mrlldd.Functional.Object.csproj"/>
+      <ProjectReference Include="..\mrlldd.Functional.Result\mrlldd.Functional.Result.csproj"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <Optimize>true</Optimize>
+        <DocumentationFile>mrlldd.Functional.xml</DocumentationFile>
+    </PropertyGroup>
 </Project>

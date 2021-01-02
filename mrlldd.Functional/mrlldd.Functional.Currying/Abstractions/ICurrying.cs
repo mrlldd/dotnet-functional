@@ -1,4 +1,4 @@
-﻿namespace mrlldd.Functional.Currying.Abstractions
+﻿namespace Functional.Currying.Abstractions
 {
     public interface ICurrying<out TResult, in T> : ICurryResult where TResult : ICurryResult
     {

@@ -2,10 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using mrlldd.Functional.Result.Internal;
-using mrlldd.Functional.Result.Internal.Utilities;
+using Functional.Result.Internal;
+using Functional.Result.Internal.Utilities;
 
-namespace mrlldd.Functional.Result.Extensions
+namespace Functional.Result.Extensions
 {
     /// <summary>
     /// The class that contains extensions methods that bind between <see cref="Result{T}"/> and <see cref="Result"/>

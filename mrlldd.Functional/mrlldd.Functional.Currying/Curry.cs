@@ -1,9 +1,9 @@
 ﻿using System;
-using mrlldd.Functional.Currying.Abstractions;
-using mrlldd.Functional.Currying.Internal.Curried.Actions;
-using mrlldd.Functional.Currying.Internal.Curried.Funcs;
+using Functional.Currying.Abstractions;
+using Functional.Currying.Internal.Curried.Actions;
+using Functional.Currying.Internal.Curried.Funcs;
 
-namespace mrlldd.Functional.Currying
+namespace Functional.Currying
 {
     public static class Curry
     {

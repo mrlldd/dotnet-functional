@@ -2,18 +2,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using mrlldd.Functional.Result.Extensions;
-using mrlldd.Functional.Result.Tests.TestUtilities;
-using mrlldd.Functional.Tests.Core;
-using mrlldd.Functional.Tests.Core.Exceptions;
-using mrlldd.Functional.Tests.Core.Extensions;
-using mrlldd.Functional.Tests.Core.Internal.Extensions;
+using Functional.Result.Extensions;
+using Functional.Result.Tests.TestUtilities;
+using Functional.Tests.Core;
+using Functional.Tests.Core.Exceptions;
+using Functional.Tests.Core.Extensions;
+using Functional.Tests.Core.Internal.Extensions;
 using NUnit.Framework;
+
 // ReSharper disable EmptyForStatement
-
 // ReSharper disable NotAccessedVariable
-
-namespace mrlldd.Functional.Result.Tests.Extensions
+namespace Functional.Result.Tests.Extensions
 {
     public class SwitchingResultExtensionsTests : TestFixtureBase
     {
@@ -28,8 +27,7 @@ namespace mrlldd.Functional.Result.Tests.Extensions
                     for (var i = 0; i < 50; i++)
                     {
                     }
-                })
-                .ShouldMuch(x => x.BeAResult<Success>(),
+                }).ShouldMuch(x => x.BeAResult<Success>(),
                     x => x.BeSameAs(Result.Success));
 
         [Test]
@@ -46,11 +44,9 @@ namespace mrlldd.Functional.Result.Tests.Extensions
 
                     throw new TestException();
                 }))
-                .SideEffects(x => x
-                        .Should()
+                .SideEffects(x => x.Should()
                         .BeAResult<Fail>(),
-                    x => x
-                        .UnwrapAsFail()
+                    x => x.UnwrapAsFail()
                         .Should()
                         .BeOfType<TestException>());
 
