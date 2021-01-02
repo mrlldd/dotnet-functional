@@ -23,28 +23,24 @@ def main():
     modified_files = set()
     for current_folder, subfolders, files in os.walk(this_script_location):
         for file in files:
-            if file.endswith('.csproj'):
+            if file.endswith('.nuspec'):
                 full_file_path = os.path.join(current_folder, file)
 
                 xml_doc = minidom.parse(full_file_path)
-                for element in xml_doc.getElementsByTagName('Version'):
+                for element in xml_doc.getElementsByTagName('version'):
                     element.childNodes[0].nodeValue = version
-                    modified_files.add(full_file_path)
-                    
-                for element in xml_doc.getElementsByTagName('PackageVersion'):
-                    element.childNodes[0].nodeValue = version
-                    modified_files.add(full_file_path)
+                modified_files.add(full_file_path)
                     
                 if full_file_path in modified_files:
                     with open(full_file_path, 'w') as f:
-                        f.write(xml_doc.toxml().replace('<?xml version="1.0" ?>', ''))
+                        f.write(xml_doc.toxml())
 
     if len(modified_files) > 0:
         print('Version "{}" applied successfully. Modified files:'.format(version))
         for modified_file in modified_files:
             print('M: {}'.format(modified_file))
     else:
-        print("Didn't find any .csproj files. Check if you're running this script from repository root.")
+        print("Didn't find any .nuspec files. Check if your repo has .nuspec files.")
 
 
 if __name__ == '__main__':
