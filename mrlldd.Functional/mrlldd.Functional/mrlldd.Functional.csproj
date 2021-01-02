@@ -15,7 +15,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional</RootNamespace>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.1</PackageVersion>
         <AssemblyName>mrlldd.Functional</AssemblyName>
         <Description>
             Provides a set of functional extensions and various functional types.
@@ -29,9 +29,9 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\mrlldd.Functional.Currying\mrlldd.Functional.Currying.csproj" />
-      <ProjectReference Include="..\mrlldd.Functional.Object\mrlldd.Functional.Object.csproj" />
-      <ProjectReference Include="..\mrlldd.Functional.Result\mrlldd.Functional.Result.csproj" />
+      <ProjectReference Include="..\mrlldd.Functional.Currying\mrlldd.Functional.Currying.csproj"/>
+      <ProjectReference Include="..\mrlldd.Functional.Object\mrlldd.Functional.Object.csproj"/>
+      <ProjectReference Include="..\mrlldd.Functional.Result\mrlldd.Functional.Result.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

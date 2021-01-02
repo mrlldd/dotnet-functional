@@ -15,7 +15,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Object</RootNamespace>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.1</PackageVersion>
         <AssemblyName>mrlldd.Functional.Object</AssemblyName>
         <Description>
             Provides a set of extensions for any objects.

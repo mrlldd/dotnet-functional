@@ -11,7 +11,7 @@
         <PackageId>mrlldd.Functional.Result</PackageId>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageTags>mrlldd;functional;result;utilities;extensions</PackageTags>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.1</PackageVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
