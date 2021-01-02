@@ -13,7 +13,7 @@
         <PackageTags>mrlldd;functional;result;utilities;extensions</PackageTags>
         <PackageProjectUrl>https://github.com/mrlldd/dotnet-functional</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageVersion>0.1.2</PackageVersion>
+        <PackageVersion>0.1.3</PackageVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
