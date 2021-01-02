@@ -16,7 +16,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <RootNamespace>Functional.Currying</RootNamespace>
-        <PackageVersion>0.1.1</PackageVersion>
+        <PackageVersion>0.1.2</PackageVersion>
         <AssemblyName>mrlldd.Functional.Currying</AssemblyName>
         <Description>
             Provides the generic types to curry delegates.
