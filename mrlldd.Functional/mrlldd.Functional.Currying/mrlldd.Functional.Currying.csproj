@@ -9,6 +9,7 @@
     <PropertyGroup>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageId>mrlldd.Functional.Currying</PackageId>
+        <PackageProjectUrl>https://github.com/mrlldd/dotnet-functional</PackageProjectUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>mrlldd;functional;currying;utilities;</PackageTags>
@@ -30,6 +31,14 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <Optimize>true</Optimize>
         <DocumentationFile>mrlldd.Functional.Currying.xml</DocumentationFile>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
 </Project>
