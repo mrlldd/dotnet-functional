@@ -1,8 +1,7 @@
-﻿<?xml version="1.0"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+<?xml version="1.0" ?><package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
     <metadata>
         <id>mrlldd.Functional.Result</id>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
         <title>mrlldd.Functional.Result</title>
         <authors>mrlldd</authors>
         <license type="expression">MIT</license>
