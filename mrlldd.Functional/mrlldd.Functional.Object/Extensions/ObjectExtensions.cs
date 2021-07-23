@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Functional.Object.Extensions
 {
@@ -122,6 +123,19 @@ namespace Functional.Object.Extensions
             effect(obj);
             return obj;
         }
+        
+        /// <summary>
+        /// Performs an effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectAsync<T>(this T? obj, Func<T?, Task> effect)
+        {
+            await effect(obj);
+            return obj;
+        }
 
         /// <summary>
         /// Performs an effect on given object.
@@ -178,6 +192,132 @@ namespace Functional.Object.Extensions
         }
         
         /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="condition">The condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, bool condition, Func<T?, Task> effect)
+        {
+            if (condition)
+            {
+                await effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<bool> conditionProvider, Func<T?, Task> effect)
+        {
+            if (conditionProvider())
+            {
+                await effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<Task<bool>> conditionProvider, Action<T?> effect)
+        {
+            if (await conditionProvider())
+            {
+                effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<Task<bool>> conditionProvider, Func<T?, Task> effect)
+        {
+            if (await conditionProvider())
+            {
+                await effect(obj);
+            }
+
+            return obj;
+        }
+
+        /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<T?, Task<bool>> conditionProvider, Action<T?> effect)
+        {
+            if (await conditionProvider(obj))
+            {
+                effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<T?, bool> conditionProvider, Func<T?, Task> effect)
+        {
+            if (conditionProvider(obj))
+            {
+                await effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
+        /// Performs an async effect on given object.
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<T?, Task<bool>> conditionProvider, Func<T?, Task> effect)
+        {
+            if (await conditionProvider(obj))
+            {
+                await effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
         /// Performs an effect on given object if given object is not null (present).
         /// </summary>
         /// <param name="obj">The source object.</param>
@@ -189,6 +329,23 @@ namespace Functional.Object.Extensions
             if (obj != null)
             {
                 effect(obj);
+            }
+
+            return obj;
+        }
+        
+        /// <summary>
+        /// Performs an async effect on given object if given object is not null (present).
+        /// </summary>
+        /// <param name="obj">The source object.</param>
+        /// <param name="effect">The async effect action.</param>
+        /// <typeparam name="T">The source object type.</typeparam>
+        /// <returns>The source object.</returns>
+        public static async Task<T?> EffectIfPresentAsync<T>(this T? obj, Func<T, Task> effect)
+        {
+            if (obj != null)
+            {
+                await effect(obj);
             }
 
             return obj;
