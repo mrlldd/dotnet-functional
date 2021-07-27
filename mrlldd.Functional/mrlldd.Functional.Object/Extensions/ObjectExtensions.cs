@@ -19,7 +19,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? Map<T, TResult>(this T? obj, Func<T?, TResult?> mapper) 
+        public static TResult Map<T, TResult>(this T obj, Func<T, TResult> mapper) 
             => mapper(obj);
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? MapIf<T, TResult>(this T? obj, bool condition, Func<T?, TResult?> mapper) 
+        public static TResult? MapIf<T, TResult>(this T obj, bool condition, Func<T, TResult> mapper) 
             => condition ? mapper(obj) : default;
         
         /// <summary>
@@ -43,7 +43,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? MapIf<T, TResult>(this T? obj, Func<bool> conditionProvider, Func<T?, TResult?> mapper) 
+        public static TResult? MapIf<T, TResult>(this T obj, Func<bool> conditionProvider, Func<T, TResult> mapper) 
             => conditionProvider() ? mapper(obj) : default;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? MapIf<T, TResult>(this T? obj, Func<bool> conditionProvider, Func<T?, TResult?> mapper, TResult? defaultValue) 
+        public static TResult MapIf<T, TResult>(this T obj, Func<bool> conditionProvider, Func<T, TResult> mapper, TResult defaultValue) 
             => conditionProvider() ? mapper(obj) : defaultValue;
         
         /// <summary>
@@ -69,7 +69,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? MapIf<T, TResult>(this T? obj, Func<T?, bool> conditionProvider, Func<T?, TResult?> mapper, TResult? defaultValue) 
+        public static TResult MapIf<T, TResult>(this T obj, Func<T, bool> conditionProvider, Func<T, TResult> mapper, TResult defaultValue) 
             => conditionProvider(obj) ? mapper(obj) : defaultValue;
         
         /// <summary>
@@ -82,7 +82,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? MapIf<T, TResult>(this T? obj, Func<T?, bool> conditionProvider, Func<T?, TResult?> mapper, Func<TResult?> defaultValueProvider) 
+        public static TResult MapIf<T, TResult>(this T obj, Func<T, bool> conditionProvider, Func<T, TResult> mapper, Func<TResult> defaultValueProvider) 
             => conditionProvider(obj) ? mapper(obj) : defaultValueProvider();
         
         /// <summary>
@@ -95,7 +95,7 @@ namespace Functional.Object.Extensions
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
         /// <returns>The projected value of <see cref="TResult"/>.</returns>
-        public static TResult? MapIf<T, TResult>(this T? obj, Func<T?, bool> conditionProvider, Func<T?, TResult?> mapper, Func<T?, TResult?> defaultValueProvider) 
+        public static TResult MapIf<T, TResult>(this T obj, Func<T, bool> conditionProvider, Func<T, TResult> mapper, Func<T, TResult> defaultValueProvider) 
             => conditionProvider(obj) ? mapper(obj) : defaultValueProvider(obj);
 
 
@@ -118,7 +118,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static T? Effect<T>(this T? obj, Action<T?> effect)
+        public static T Effect<T>(this T obj, Action<T> effect)
         {
             effect(obj);
             return obj;
@@ -131,7 +131,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectAsync<T>(this T? obj, Func<T?, Task> effect)
+        public static async Task<T> EffectAsync<T>(this T obj, Func<T, Task> effect)
         {
             await effect(obj);
             return obj;
@@ -145,7 +145,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static T? EffectIf<T>(this T? obj, bool condition, Action<T?> effect)
+        public static T EffectIf<T>(this T obj, bool condition, Action<T> effect)
         {
             if (condition)
             {
@@ -163,7 +163,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static T? EffectIf<T>(this T? obj, Func<bool> conditionProvider, Action<T?> effect)
+        public static T EffectIf<T>(this T obj, Func<bool> conditionProvider, Action<T> effect)
         {
             if (conditionProvider())
             {
@@ -181,7 +181,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static T? EffectIf<T>(this T? obj, Func<T?, bool> conditionProvider, Action<T?> effect)
+        public static T EffectIf<T>(this T obj, Func<T, bool> conditionProvider, Action<T> effect)
         {
             if (conditionProvider(obj))
             {
@@ -199,7 +199,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, bool condition, Func<T?, Task> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, bool condition, Func<T, Task> effect)
         {
             if (condition)
             {
@@ -217,7 +217,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<bool> conditionProvider, Func<T?, Task> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, Func<bool> conditionProvider, Func<T, Task> effect)
         {
             if (conditionProvider())
             {
@@ -235,7 +235,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<Task<bool>> conditionProvider, Action<T?> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, Func<Task<bool>> conditionProvider, Action<T> effect)
         {
             if (await conditionProvider())
             {
@@ -253,7 +253,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<Task<bool>> conditionProvider, Func<T?, Task> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, Func<Task<bool>> conditionProvider, Func<T, Task> effect)
         {
             if (await conditionProvider())
             {
@@ -271,7 +271,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<T?, Task<bool>> conditionProvider, Action<T?> effect)
+        public static async Task<T> EffectIfAsync<T>(this T? obj, Func<T, Task<bool>> conditionProvider, Action<T> effect)
         {
             if (await conditionProvider(obj))
             {
@@ -289,7 +289,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<T?, bool> conditionProvider, Func<T?, Task> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, Func<T, bool> conditionProvider, Func<T, Task> effect)
         {
             if (conditionProvider(obj))
             {
@@ -307,7 +307,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfAsync<T>(this T? obj, Func<T?, Task<bool>> conditionProvider, Func<T?, Task> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, Func<T, Task<bool>> conditionProvider, Func<T, Task> effect)
         {
             if (await conditionProvider(obj))
             {
@@ -324,7 +324,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static T? EffectIfPresent<T>(this T? obj, Action<T> effect)
+        public static T EffectIfPresent<T>(this T obj, Action<T> effect)
         {
             if (obj != null)
             {
@@ -341,7 +341,7 @@ namespace Functional.Object.Extensions
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T?> EffectIfPresentAsync<T>(this T? obj, Func<T, Task> effect)
+        public static async Task<T> EffectIfPresentAsync<T>(this T obj, Func<T, Task> effect)
         {
             if (obj != null)
             {
