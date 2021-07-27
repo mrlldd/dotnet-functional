@@ -18,83 +18,83 @@ namespace Functional.Object.Extensions
         /// <param name="mapper">The projector delegate.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult Map<T, TResult>(this T obj, Func<T, TResult> mapper) 
             => mapper(obj);
 
         /// <summary>
-        /// Projects the source object to the new object with given projector delegate if <see cref="condition"/> is truthy, otherwise - default value of <see cref="TResult"/>.
+        /// Projects the source object to the new object with given projector delegate if <paramref name="condition"/> is truthy, otherwise - default value of <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="obj">The source object.</param>
         /// <param name="condition">The condition <see cref="bool"/> that indicates if object should be projected.</param>
         /// <param name="mapper">The projector delegate.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult? MapIf<T, TResult>(this T obj, bool condition, Func<T, TResult> mapper) 
             => condition ? mapper(obj) : default;
         
         /// <summary>
-        /// Projects the source object to the new object with given projector delegate if <see cref="conditionProvider"/> result is truthy, otherwise - default value of <see cref="TResult"/>.
+        /// Projects the source object to the new object with given projector delegate if <paramref name="conditionProvider"/> result is truthy, otherwise - default value of <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="obj">The source object.</param>
         /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if object should be projected.</param>
         /// <param name="mapper">The projector delegate.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult? MapIf<T, TResult>(this T obj, Func<bool> conditionProvider, Func<T, TResult> mapper) 
             => conditionProvider() ? mapper(obj) : default;
 
         /// <summary>
-        /// Projects the source object to the new object with given projector delegate if <see cref="conditionProvider"/> result is truthy, otherwise - default value of <see cref="TResult"/>.
+        /// Projects the source object to the new object with given projector delegate if <paramref name="conditionProvider"/> result is truthy, otherwise - default value of <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="obj">The source object.</param>
         /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if object should be projected.</param>
         /// <param name="mapper">The projector delegate.</param>
-        /// <param name="defaultValue">The value of <see cref="TResult"/> type that will be returned if <see cref="conditionProvider"/> result would be falsy.</param>
+        /// <param name="defaultValue">The value of <typeparamref name="TResult"/> type that will be returned if <paramref name="conditionProvider"/> result would be falsy.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult MapIf<T, TResult>(this T obj, Func<bool> conditionProvider, Func<T, TResult> mapper, TResult defaultValue) 
             => conditionProvider() ? mapper(obj) : defaultValue;
         
         /// <summary>
-        /// Projects the source object to the new object with given projector delegate if <see cref="conditionProvider"/> result is truthy, otherwise - default value of <see cref="TResult"/>.
+        /// Projects the source object to the new object with given projector delegate if <paramref name="conditionProvider"/> result is truthy, otherwise - default value of <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="obj">The source object.</param>
         /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if object should be projected.</param>
         /// <param name="mapper">The projector delegate.</param>
-        /// <param name="defaultValue">The value of <see cref="TResult"/> type that will be returned if <see cref="conditionProvider"/> result would be falsy.</param>
+        /// <param name="defaultValue">The value of <typeparamref name="TResult"/> type that will be returned if <paramref name="conditionProvider"/> result would be falsy.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult MapIf<T, TResult>(this T obj, Func<T, bool> conditionProvider, Func<T, TResult> mapper, TResult defaultValue) 
             => conditionProvider(obj) ? mapper(obj) : defaultValue;
         
         /// <summary>
-        /// Projects the source object to the new object with given projector delegate if <see cref="conditionProvider"/> result is truthy, otherwise - default value of <see cref="TResult"/>.
+        /// Projects the source object to the new object with given projector delegate if <paramref name="conditionProvider"/> result is truthy, otherwise - default value of <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="obj">The source object.</param>
         /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if object should be projected.</param>
         /// <param name="mapper">The projector delegate.</param>
-        /// <param name="defaultValueProvider">The delegate that provides value of <see cref="TResult"/> type that will be returned if <see cref="conditionProvider"/> result would be falsy.</param>
+        /// <param name="defaultValueProvider">The delegate that provides value of <typeparamref name="TResult"/> type that will be returned if <paramref name="conditionProvider"/> result would be falsy.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult MapIf<T, TResult>(this T obj, Func<T, bool> conditionProvider, Func<T, TResult> mapper, Func<TResult> defaultValueProvider) 
             => conditionProvider(obj) ? mapper(obj) : defaultValueProvider();
         
         /// <summary>
-        /// Projects the source object to the new object with given projector delegate if <see cref="conditionProvider"/> result is truthy, otherwise - default value of <see cref="TResult"/>.
+        /// Projects the source object to the new object with given projector delegate if <paramref name="conditionProvider"/> result is truthy, otherwise - default value of <typeparamref name="TResult"/>.
         /// </summary>
         /// <param name="obj">The source object.</param>
         /// <param name="conditionProvider">The delegate that provides condition bool that indicates if object should be projected.</param>
         /// <param name="mapper">The projector delegate.</param>
-        /// <param name="defaultValueProvider">The delegate that provides value of <see cref="TResult"/> type that will be returned if <see cref="conditionProvider"/> result would be falsy.</param>
+        /// <param name="defaultValueProvider">The delegate that provides value of <typeparamref name="TResult"/> type that will be returned if <paramref name="conditionProvider"/> result would be falsy.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/>.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/>.</returns>
         public static TResult MapIf<T, TResult>(this T obj, Func<T, bool> conditionProvider, Func<T, TResult> mapper, Func<T, TResult> defaultValueProvider) 
             => conditionProvider(obj) ? mapper(obj) : defaultValueProvider(obj);
 
@@ -106,7 +106,7 @@ namespace Functional.Object.Extensions
         /// <param name="mapper">The projector delegate.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <typeparam name="TResult">The result object type.</typeparam>
-        /// <returns>The projected value of <see cref="TResult"/> or default value if the source object is not present.</returns>
+        /// <returns>The projected value of <typeparamref name="TResult"/> or default value if the source object is not present.</returns>
         public static TResult? MapIfPresent<T, TResult>(this T? obj, Func<T, TResult> mapper)
             => obj == null ? default : mapper(obj);
         
@@ -141,7 +141,7 @@ namespace Functional.Object.Extensions
         /// Performs an effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="condition">The condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="condition">The condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -159,7 +159,7 @@ namespace Functional.Object.Extensions
         /// Performs an effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -177,7 +177,7 @@ namespace Functional.Object.Extensions
         /// Performs an effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -195,7 +195,7 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="condition">The condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="condition">The condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -213,7 +213,7 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -231,7 +231,7 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -249,7 +249,7 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -267,11 +267,11 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
-        public static async Task<T> EffectIfAsync<T>(this T? obj, Func<T, Task<bool>> conditionProvider, Action<T> effect)
+        public static async Task<T> EffectIfAsync<T>(this T obj, Func<T, Task<bool>> conditionProvider, Action<T> effect)
         {
             if (await conditionProvider(obj))
             {
@@ -285,7 +285,7 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
@@ -303,7 +303,7 @@ namespace Functional.Object.Extensions
         /// Performs an async effect on given object.
         /// </summary>
         /// <param name="obj">The source object.</param>
-        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <see cref="effect"/> should be executed.</param>
+        /// <param name="conditionProvider">The delegate that provides async condition <see cref="bool"/> that indicates if <paramref name="effect"/> should be executed.</param>
         /// <param name="effect">The async effect action.</param>
         /// <typeparam name="T">The source object type.</typeparam>
         /// <returns>The source object.</returns>
