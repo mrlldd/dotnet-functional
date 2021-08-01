@@ -14,7 +14,7 @@
     }
 
     /// <summary>
-    /// The class that represents a generic success and has a wrapped value of <see cref="T"/>.
+    /// The class that represents a generic success and has a wrapped value of <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of wrapped value.</typeparam>
     public sealed class Success<T> : Result<T>
@@ -35,7 +35,7 @@
             => $"{base.ToString()}value: {Value}";
 
         /// <summary>
-        /// The operator that wraps <see cref="T"/> to <see cref="Success{T}"/>.
+        /// The operator that wraps <typeparamref name="T"/> to <see cref="Success{T}"/>.
         /// </summary>
         /// <param name="value">The value that will be wrapped.</param>
         /// <returns>The <see cref="Success{T}"/>.</returns>
@@ -43,10 +43,10 @@
             => new(value);
 
         /// <summary>
-        /// The operator that unwraps <see cref="Success{T}"/> to <see cref="T"/>.
+        /// The operator that unwraps <see cref="Success{T}"/> to <typeparamref name="T"/>.
         /// </summary>
         /// <param name="success">The <see cref="Success{T}"/> that will be unwrapped.</param>
-        /// <returns>The <see cref="T"/>.</returns>
+        /// <returns>The <typeparamref name="T"/>.</returns>
         public static implicit operator T(Success<T> success)
             => success.Value;
     }

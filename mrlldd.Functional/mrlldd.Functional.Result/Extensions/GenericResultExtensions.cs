@@ -38,7 +38,7 @@ namespace Functional.Result.Extensions
         /// <param name="result">The result that will be unwrapped.</param>
         /// <typeparam name="T">The type of value that wrapped.</typeparam>
         /// <exception cref="ResultUnwrapException">Thrown when result is not <see cref="Result{T}.Successful"/></exception>
-        /// <returns>The <see cref="T"/>.</returns>
+        /// <returns>The <typeparamref name="T"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UnwrapAsSuccess<T>(this Result<T> result) => result;
 

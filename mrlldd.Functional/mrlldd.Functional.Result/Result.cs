@@ -146,11 +146,11 @@ namespace Functional.Result
             => $"Success: {Successful}, ";
 
         /// <summary>
-        /// The operator that implicitly unwraps the <see cref="Result{T}"/> to <see cref="T"/>.
+        /// The operator that implicitly unwraps the <see cref="Result{T}"/> to <typeparamref name="T"/>.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <exception cref="ResultUnwrapException">Thrown when passed result is not <see cref="Successful"/>.</exception>
-        /// <returns>The <see cref="T"/>.</returns>
+        /// <returns>The <typeparamref name="T"/>.</returns>
         public static implicit operator T(Result<T> result)
             => result.Successful
                 ? ((Success<T>) result).Value
@@ -177,7 +177,7 @@ namespace Functional.Result
             => new Fail<T>(exception);
 
         /// <summary>
-        /// The operator that implicitly wraps the <see cref="T"/> to <see cref="Result{T}"/>.
+        /// The operator that implicitly wraps the <typeparamref name="T"/> to <see cref="Result{T}"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The <see cref="Result{T}"/>.</returns>
