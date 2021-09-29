@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Functional.Result.Internal.Utilities
 {
-    internal static class Execute
+    internal partial class Execute
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result Safely(Action effect)
@@ -100,5 +101,6 @@ namespace Functional.Result.Internal.Utilities
                 return e;
             }
         }
+
     }
 }

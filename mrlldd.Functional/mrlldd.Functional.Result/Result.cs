@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Functional.Result.Exceptions;
-using Functional.Result.Extensions;
 using Functional.Result.Internal.Utilities;
 
 namespace Functional.Result
@@ -53,8 +52,8 @@ namespace Functional.Result
         /// <param name="asyncEffect">The async effect that will be executed.</param>
         /// <returns>The <see cref="Task{TResult}"/> that returns <see cref="Result"/>.</returns>
         public static Task<Result> Of(Func<Task> asyncEffect)
-            => asyncEffect().ThenWrapAsResult();
-
+            => Execute.SafelyAsync(asyncEffect);
+        
         /// <summary>
         ///  Executes the async effect and returns
         /// <see cref="Functional.Result.Success"/> if no exception was thrown or
@@ -64,7 +63,7 @@ namespace Functional.Result
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The <see cref="Task{TResult}"/> that returns <see cref="Result"/>.</returns>
         public static Task<Result> Of(Func<CancellationToken, Task> asyncEffect, CancellationToken cancellationToken)
-            => asyncEffect(cancellationToken).ThenWrapAsResult();
+            => Execute.SafelyAsync(asyncEffect, cancellationToken);
 
         /// <summary>
         /// Executes the factory and returns
@@ -98,7 +97,7 @@ namespace Functional.Result
         /// <typeparam name="T">The type of value that async factory returns.</typeparam>
         /// <returns>The <see cref="Task{TResult}"/> that returns <see cref="Result{T}"/>.</returns>
         public static Task<Result<T>> Of<T>(Func<Task<T>> asyncFactory)
-            => asyncFactory().ThenWrapAsResult();
+            => Execute.SafelyAsync(asyncFactory);
 
         /// <summary>
         /// Executes the async factory and returns
@@ -111,7 +110,7 @@ namespace Functional.Result
         /// <returns>The <see cref="Task{TResult}"/> that returns <see cref="Result{T}"/>.</returns>
         public static Task<Result<T>> Of<T>(Func<CancellationToken, Task<T>> asyncFactory,
             CancellationToken cancellationToken)
-            => asyncFactory(cancellationToken).ThenWrapAsResult();
+            => Execute.SafelyAsync(asyncFactory, cancellationToken);
         /// <summary>
         /// The operator that implicitly wraps <see cref="Exception"/> to <see cref="Result"/>.
         /// </summary>
